@@ -1,0 +1,11 @@
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\bin\Debug\netcoreapp2.2\LCS.deps.json
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\bin\Debug\netcoreapp2.2\LCS.runtimeconfig.json
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\bin\Debug\netcoreapp2.2\LCS.runtimeconfig.dev.json
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\bin\Debug\netcoreapp2.2\LCS.dll
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\bin\Debug\netcoreapp2.2\LCS.pdb
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\obj\Debug\netcoreapp2.2\LCS.csprojAssemblyReference.cache
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\obj\Debug\netcoreapp2.2\LCS.csproj.CoreCompileInputs.cache
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\obj\Debug\netcoreapp2.2\LCS.AssemblyInfoInputs.cache
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\obj\Debug\netcoreapp2.2\LCS.AssemblyInfo.cs
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\obj\Debug\netcoreapp2.2\LCS.dll
+C:\Users\Eti Tsvetkova\source\repos\LCS\LCS\obj\Debug\netcoreapp2.2\LCS.pdb
