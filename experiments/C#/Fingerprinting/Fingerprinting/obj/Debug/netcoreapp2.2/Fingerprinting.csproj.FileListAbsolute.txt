@@ -1,0 +1,11 @@
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\bin\Debug\netcoreapp2.2\Fingerprinting.deps.json
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\bin\Debug\netcoreapp2.2\Fingerprinting.runtimeconfig.json
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\bin\Debug\netcoreapp2.2\Fingerprinting.runtimeconfig.dev.json
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\bin\Debug\netcoreapp2.2\Fingerprinting.dll
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\obj\Debug\netcoreapp2.2\Fingerprinting.csproj.CoreCompileInputs.cache
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\obj\Debug\netcoreapp2.2\Fingerprinting.AssemblyInfoInputs.cache
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\obj\Debug\netcoreapp2.2\Fingerprinting.AssemblyInfo.cs
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\obj\Debug\netcoreapp2.2\Fingerprinting.csprojAssemblyReference.cache
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\bin\Debug\netcoreapp2.2\Fingerprinting.pdb
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\obj\Debug\netcoreapp2.2\Fingerprinting.dll
+C:\git\Smart-Radio\experiments\C#\Fingerprinting\Fingerprinting\obj\Debug\netcoreapp2.2\Fingerprinting.pdb
