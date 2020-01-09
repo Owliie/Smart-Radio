@@ -10,9 +10,7 @@ namespace Fingerprinting
     class Program
     {
         private static List<int> frequencies;
-
-
-
+        
         private static byte[] GetBytesOfSong(string songPath)
         {
             var songFile = new AudioFileReader(songPath);
@@ -171,23 +169,24 @@ namespace Fingerprinting
 
             var epsilons = new long[] { 2174106058, 12000000, 13000000, 14000000, 15000000, 16000000, 17000000, 18000000, 19000000, 20000000, 21000000 };
 
-            var sampleSize = 4000;
+            var sampleSize = 1024;
 
             var epic = Fingerprint(Sample(GetBytesOfSong(epicPath), sampleSize));
             var epicPart = Fingerprint(Sample(GetBytesOfSong(epicPartPath), sampleSize));
-            var epicBeginning = Fingerprint(Sample(GetBytesOfSong(epicBeginningPath), sampleSize));
-            var pinko = Fingerprint(Sample(GetBytesOfSong(pinkoPath), sampleSize));
+//            var epicBeginning = Fingerprint(Sample(GetBytesOfSong(epicBeginningPath), sampleSize));
+//            var pinko = Fingerprint(Sample(GetBytesOfSong(pinkoPath), sampleSize));
+            Console.WriteLine(epic);
+            Console.WriteLine(epicPart);
 
-
-            foreach (var epsilon in epsilons)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"epsilon: {epsilon}");
-                Console.WriteLine("epic - epic part: " + MatchMaking(epic, epicPart, epsilon) * 100 / epicPart.Count + "%");
-                Console.WriteLine("epic - epic beginning: " + MatchMaking(epic, epicBeginning, epsilon) * 100 / epicBeginning.Count + "%");
-                Console.WriteLine("pinko - epic part: " + MatchMaking(pinko, epicPart, epsilon) * 100 / epicPart.Count + "%");
-                Console.WriteLine("pinko - epic beginning: " + MatchMaking(pinko, epicBeginning, epsilon) * 100 / epicBeginning.Count + "%");
-            }
+//            foreach (var epsilon in epsilons)
+//            {
+//                Console.WriteLine();
+//                Console.WriteLine($"epsilon: {epsilon}");
+//                Console.WriteLine("epic - epic part: " + MatchMaking(epic, epicPart, epsilon) * 100 / epicPart.Count + "%");
+//                Console.WriteLine("epic - epic beginning: " + MatchMaking(epic, epicBeginning, epsilon) * 100 / epicBeginning.Count + "%");
+//                Console.WriteLine("pinko - epic part: " + MatchMaking(pinko, epicPart, epsilon) * 100 / epicPart.Count + "%");
+//                Console.WriteLine("pinko - epic beginning: " + MatchMaking(pinko, epicBeginning, epsilon) * 100 / epicBeginning.Count + "%");
+//            }
         }
     }
 }
