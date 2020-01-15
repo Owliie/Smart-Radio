@@ -8,6 +8,8 @@ namespace SmartRadio.Data
     {
         public DbSet<UserFriend> Friends { get; set; }
 
+        public DbSet<SongData> Songs { get; set; }
+
         public SmartRadioDbContext(DbContextOptions<SmartRadioDbContext> options)
             : base(options)
         {
@@ -29,6 +31,11 @@ namespace SmartRadio.Data
 
             builder.Entity<UserFriend>()
                 .HasKey(uf => new {uf.Id1, uf.Id2});
+
+            builder.Entity<SongData>()
+                .HasOne(sd => sd.Listener)
+                .WithMany()
+                .HasForeignKey(sd => sd.ListenerId);
         }
     }
 }
