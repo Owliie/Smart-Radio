@@ -8,6 +8,6 @@ namespace SmartRadio.Services.Interfaces
 {
     public interface IMusicService
     {
-        IQueryable<SongData> GetSongs(string userId, DateTime date);
+        IQueryable<SongData> GetSongsByDay(string userId, DateTime date);
     }
 }

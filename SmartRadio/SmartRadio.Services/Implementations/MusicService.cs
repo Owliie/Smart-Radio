@@ -17,10 +17,10 @@ namespace SmartRadio.Services.Implementations
             this.db = db;
         }
 
-        public IQueryable<SongData> GetSongs(string userId, DateTime date)
+        public IQueryable<SongData> GetSongsByDay(string userId, DateTime date)
         {
             return this.db.Songs
-                .Where(s => s.ListenerId == userId && s.Date.Equals(date)).OrderByDescending(s => s.Date);
+                .Where(s => s.ListenerId == userId && s.Date.Day.Equals(date.Day)).OrderByDescending(s => s.Date);
         }
     }
 }
