@@ -25,6 +25,6 @@ namespace SmartRadio.Data.Models
         public string Artist { get; set; }
 
         [Required]
-        public string FMStation { get; set; }
+        public string RadioStation { get; set; }
     }
 }

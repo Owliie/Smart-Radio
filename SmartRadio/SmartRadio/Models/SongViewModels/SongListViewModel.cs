@@ -17,6 +17,6 @@ namespace SmartRadio.Models
 
         public DateTime Date { get; set; }
 
-        public string FMStation { get; set; }
+        public string RadioStation { get; set; }
     }
 }

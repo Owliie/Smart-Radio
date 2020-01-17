@@ -144,7 +144,7 @@ namespace SmartRadio.Data.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("FMStation")
+                    b.Property<string>("RadioStation")
                         .IsRequired();
 
                     b.Property<string>("ListenerId")
