@@ -13,5 +13,6 @@ namespace SmartRadio.Services.Interfaces
         IQueryable<User> GetUsersByName(string username);
         Task<User> AddFriend(string userId, string friendId);
         Task DeleteFriend(string userId, string friendId);
+        Task UpdateRadioStation(string userId, string radioStation);
     }
 }

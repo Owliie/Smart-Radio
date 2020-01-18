@@ -57,5 +57,14 @@ namespace SmartRadio.Services.Implementations
 
             await this.db.SaveChangesAsync();
         }
+
+        public async Task UpdateRadioStation(string userId, string radioStation)
+        {
+            var user = await this.db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            user.RadioStation = radioStation;
+
+            await this.db.SaveChangesAsync();
+        }
     }
 }

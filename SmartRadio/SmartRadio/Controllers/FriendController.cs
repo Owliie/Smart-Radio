@@ -15,8 +15,8 @@ namespace SmartRadio.Controllers
     [Authorize]
     public class FriendController : Controller
     {
-        private IFriendService friendService;
-        private UserManager<User> userManager;
+        private readonly IFriendService friendService;
+        private readonly UserManager<User> userManager;
         private readonly string userId;
 
         public FriendController(IFriendService friendService, UserManager<User> userManager)

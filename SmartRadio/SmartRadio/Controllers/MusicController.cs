@@ -13,8 +13,8 @@ namespace SmartRadio.Controllers
     [Authorize]
     public class MusicController : Controller
     {
-        private IMusicService musicService;
-        private UserManager<User> userManager;
+        private readonly IMusicService musicService;
+        private readonly UserManager<User> userManager;
 
         public MusicController(IMusicService musicService, UserManager<User> userManager)
         {
