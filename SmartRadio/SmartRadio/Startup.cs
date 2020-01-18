@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartRadio.Data;
 using SmartRadio.Infrastructure.Extensions;
+using SmartRadio.Services.Implementations;
+using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio
 {
@@ -57,6 +59,10 @@ namespace SmartRadio
                 .AddSignInManager<SignInManager<User>>()
                 .AddRoleStore<RoleStore<IdentityRole, SmartRadioDbContext>>()
                 .AddUserStore<UserStore<User, IdentityRole, SmartRadioDbContext>>();
+
+            services.AddTransient<IFriendService, FriendService>();
+            services.AddTransient<IMusicService, MusicService>();
+            services.AddTransient<ISearchService, SearchService>();
 
             services.AddAutoMapper();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

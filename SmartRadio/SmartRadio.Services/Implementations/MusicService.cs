@@ -8,7 +8,7 @@ using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Services.Implementations
 {
-    class MusicService : IMusicService
+    public class MusicService : IMusicService
     {
         private SmartRadioDbContext db;
 
