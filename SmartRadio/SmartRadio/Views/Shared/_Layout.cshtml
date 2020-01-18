@@ -43,7 +43,27 @@
     <div class="container">
         <partial name="_CookieConsentPartial" />
         <main role="main" class="pb-3">
-            @RenderBody()
+            @if (this.User.Identity.IsAuthenticated && (this.ViewData["Title"].Equals("Songs") || this.ViewData["Title"].Equals("Search")))
+            {
+                <div class="row">
+                    <div class="col">
+                        <div class="row">
+                            <form asp-controller="Search" asp-action="Search">
+                                <input type="text" name="SearchString">
+                                <input class="btn btn-outline-success" type="submit" value="Search" />
+                            </form>
+                        </div>
+                        <div class="row">
+                            @RenderBody()
+                        </div>
+                    </div>
+                    <div class="col-3"></div>
+                </div>
+            }
+            else
+            {
+                @RenderBody();
+            }
         </main>
     </div>
 

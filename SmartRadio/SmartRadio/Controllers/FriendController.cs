@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SmartRadio.Data;
 using SmartRadio.Models.FriendViewModels;
+using SmartRadio.Models.SearchVieModels;
 using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Controllers
@@ -49,17 +50,6 @@ namespace SmartRadio.Controllers
             await this.friendService.AddFriend(this.userId, id);
 
             return this.Ok();
-        }
-
-        [HttpGet]
-        public IActionResult Search(string name)
-        {
-            var people = this.friendService
-                .GetUsersByName(name)
-                .ProjectTo<FriendByNameListViewModel>()
-                .ToList();
-
-            return this.View(people);
         }
     }
 }

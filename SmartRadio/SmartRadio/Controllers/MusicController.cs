@@ -32,16 +32,5 @@ namespace SmartRadio.Controllers
 
             return View(songs);
         }
-
-        [HttpGet]
-        public IActionResult Search(DateTime dayDate)
-        {
-            var songs = this.musicService
-                .GetSongsByDay(this.userManager.GetUserId(this.User), dayDate)
-                .ProjectTo<SongListViewModel>()
-                .ToList();
-
-            return this.View(songs);
-        }
     }
 }

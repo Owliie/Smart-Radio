@@ -10,7 +10,6 @@ namespace SmartRadio.Services.Interfaces
     public interface IFriendService
     {
         IQueryable<User> GetFriends(string userId);
-        IQueryable<User> GetUsersByName(string username);
         Task<User> AddFriend(string userId, string friendId);
         Task DeleteFriend(string userId, string friendId);
         Task UpdateRadioStation(string userId, string radioStation);

@@ -1,0 +1,20 @@
+﻿@model IEnumerable<SearchByNameListViewModel>
+
+@{
+    ViewBag.Title = "Search";
+    Layout = "_Layout";
+}
+
+@if (!Model.Any())
+{
+    <h1 class="display-1">Sorry, there is no such pal :c</h1>
+}
+else
+{
+    <ul class="list-group list-group-flush">
+        @foreach (var person in Model)
+        {
+            <li class="list-group-item">@person.Name</li>
+        }
+    </ul>
+}

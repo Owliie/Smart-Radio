@@ -1,0 +1,35 @@
+﻿@model IEnumerable<SongListViewModel>
+
+@{
+    ViewBag.Title = "Songs";
+    Layout = "_Layout";
+}
+
+@if (!Model.Any())
+{
+    <h1 class="display-1">There's nothing to show here :(</h1>
+}
+else
+{
+    <table class="table table-borderless table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Artist</th>
+                <th scope="col">Radio station</th>
+                <th scope="col">Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var song in Model)
+            {
+                <tr>
+                    <td>@song.Name</td>
+                    <td>@song.Artist</td>
+                    <td>@song.RadioStation</td>
+                    <td>@song.Date.ToShortTimeString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

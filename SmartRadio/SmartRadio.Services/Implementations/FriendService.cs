@@ -27,11 +27,6 @@ namespace SmartRadio.Services.Implementations
                 .Select(uf => uf.User2);
         }
 
-        public IQueryable<User> GetUsersByName(string username)
-        {
-            return this.db.Users.Where(u => u.UserName.Contains(username));
-        }
-
         public async Task<User> AddFriend(string userId, string friendId)
         {
             var user = await this.db.Users.FirstOrDefaultAsync(u => u.Id == userId);
