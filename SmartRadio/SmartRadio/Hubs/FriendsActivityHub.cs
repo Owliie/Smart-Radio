@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using SmartRadio.Data;
+using SmartRadio.Models.FriendViewModels;
 using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Hubs
@@ -19,6 +21,18 @@ namespace SmartRadio.Hubs
         public async Task JoinRoom(string userId)
         {
             await this.Groups.AddToGroupAsync(this.Context.ConnectionId, userId);
+
+            foreach (var friend in this.friendService.GetFriends(userId))
+            {
+                await this.Groups.AddToGroupAsync(this.Context.ConnectionId, friend.Id);
+            }
+
+            var friends = this.friendService
+                .GetFriends(userId)
+                .ProjectTo<FriendListViewModel>()
+                .ToList();
+
+            await this.Clients.Group(userId).SendAsync("DisplayFriends", friends);
         }
 
         public FriendsActivityHub(IFriendService friendService, UserManager<User> userManager)

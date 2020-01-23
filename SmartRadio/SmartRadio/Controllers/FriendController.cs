@@ -35,7 +35,7 @@ namespace SmartRadio.Controllers
                 .ProjectTo<FriendListViewModel>()
                 .ToList();
 
-            return View(friends);
+            return this.Json(friends);
         }
 
         public async Task<IActionResult> Delete(string id)

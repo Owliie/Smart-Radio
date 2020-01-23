@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SmartRadio.Data;
+using SmartRadio.Data.Models;
 
 namespace SmartRadio.Infrastructure.Extensions
 {
@@ -35,10 +36,22 @@ namespace SmartRadio.Infrastructure.Extensions
 
                         if (!await db.Users.AnyAsync())
                         {
-                            var user = new User()
+                            var pesho = new User()
                             {
                                 UserName = "pesho",
-                                Email = "pesho@gmail.com"
+                                Email = "pesho@gmail.com",
+                            };
+
+                            var mario = new User()
+                            {
+                                UserName = "mario",
+                                Email = "mario@gmail.com"
+                            };
+
+                            var misho = new User()
+                            {
+                                UserName = "misho",
+                                Email = "misho@gmail.com"
                             };
 
                             var radio = new User()
@@ -47,7 +60,19 @@ namespace SmartRadio.Infrastructure.Extensions
                                 Email = "radio@gmail.com"
                             };
 
-                            await userManager.CreateAsync(user, "test12");
+                            pesho.Friends.Add(new UserFriend()
+                            {
+                                User2 = mario
+                            });
+
+                            pesho.Friends.Add(new UserFriend()
+                            {
+                                User2 = misho
+                            });
+
+                            await userManager.CreateAsync(pesho, "test12");
+                            await userManager.CreateAsync(mario, "test12");
+                            await userManager.CreateAsync(misho, "test12");
                             await userManager.CreateAsync(radio, "test12");
                             await userManager.AddToRoleAsync(radio, "Radio");
 

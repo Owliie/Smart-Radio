@@ -13,7 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartRadio.Data;
+using SmartRadio.Hubs;
 using SmartRadio.Infrastructure.Extensions;
+using SmartRadio.Infrastructure.Filters;
 using SmartRadio.Services.Implementations;
 using SmartRadio.Services.Interfaces;
 
@@ -65,7 +67,9 @@ namespace SmartRadio
             services.AddTransient<ISearchService, SearchService>();
 
             services.AddAutoMapper();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(config => { config.Filters.Add<UserIdInCookiesFilter>(); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,6 +89,11 @@ namespace SmartRadio
             app.UseAuthentication();
 
             app.Seed();
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<FriendsActivityHub>("/FriendsActivity");
+            });
 
             app.UseMvc(routes =>
             {
