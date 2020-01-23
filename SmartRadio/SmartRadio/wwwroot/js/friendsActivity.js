@@ -13,7 +13,17 @@
     });
 
     connection.on("DisplayFriends", function (friends) {
-        console.log(friends);
+        for (let friend of friends) {
+            console.log(friend);
+            $("#friends").append($(`<li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">${friend.userName}</h5>
+                                        <p id="friend-${friend.userName}" hidden>${friend.id}</p>
+                                        <div>
+                                            <span id="fm" class="badge badge-secondary">${friend.radioStation}</span>
+                                            <span>&#xFE19;</span>
+                                        </div>
+                                    </li>`));
+        }
     });
 });
 
