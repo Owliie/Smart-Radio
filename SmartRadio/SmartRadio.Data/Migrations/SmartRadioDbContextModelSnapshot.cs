@@ -144,13 +144,13 @@ namespace SmartRadio.Data.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("RadioStation")
-                        .IsRequired();
-
                     b.Property<string>("ListenerId")
                         .IsRequired();
 
                     b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("RadioStation")
                         .IsRequired();
 
                     b.HasKey("Id");

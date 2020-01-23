@@ -26,7 +26,7 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -35,7 +35,15 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial"/>
+                    @if (this.User.Identity.IsAuthenticated)
+                    {
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Music" asp-action="Index">Songs</a>
+                            </li>
+                        </ul>
+                    }
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -48,16 +56,24 @@
                 <div class="row">
                     <div class="col">
                         <div class="row">
-                            <form asp-controller="Search" asp-action="Search">
-                                <input type="text" name="SearchString">
-                                <input class="btn btn-outline-success" type="submit" value="Search" />
+                            <form asp-controller="Search" asp-action="Search" class="w-100">
+                                <div class="form-row align-items-center">
+                                    <div class="col-7">
+                                        <input class="form-control" placeholder="Search for friends..." type="text" name="SearchString">
+                                    </div>
+                                    <div class="col-auto">
+                                        <input class="btn btn-outline-success" type="submit" value="Search" />
+                                    </div>
+                                </div>
                             </form>
                         </div>
                         <div class="row">
                             @RenderBody()
                         </div>
                     </div>
-                    <div class="col-3"></div>
+                    <div class="col-3">
+
+                    </div>
                 </div>
             }
             else

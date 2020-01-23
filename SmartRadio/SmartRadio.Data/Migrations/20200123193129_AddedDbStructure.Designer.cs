@@ -10,8 +10,8 @@ using SmartRadio.Data;
 namespace SmartRadio.Data.Migrations
 {
     [DbContext(typeof(SmartRadioDbContext))]
-    [Migration("20200115205342_Added song data")]
-    partial class Addedsongdata
+    [Migration("20200123193129_AddedDbStructure")]
+    partial class AddedDbStructure
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -146,13 +146,13 @@ namespace SmartRadio.Data.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("RadioStation")
-                        .IsRequired();
-
                     b.Property<string>("ListenerId")
                         .IsRequired();
 
                     b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("RadioStation")
                         .IsRequired();
 
                     b.HasKey("Id");

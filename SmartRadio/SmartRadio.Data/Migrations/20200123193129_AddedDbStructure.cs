@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SmartRadio.Data.Migrations
 {
-    public partial class Addedusers : Migration
+    public partial class AddedDbStructure : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -178,6 +178,29 @@ namespace SmartRadio.Data.Migrations
                         onDelete: ReferentialAction.NoAction);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Songs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ListenerId = table.Column<string>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Artist = table.Column<string>(nullable: false),
+                    RadioStation = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Songs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Songs_AspNetUsers_ListenerId",
+                        column: x => x.ListenerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -221,6 +244,11 @@ namespace SmartRadio.Data.Migrations
                 name: "IX_Friends_Id2",
                 table: "Friends",
                 column: "Id2");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Songs_ListenerId",
+                table: "Songs",
+                column: "ListenerId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -242,6 +270,9 @@ namespace SmartRadio.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Friends");
+
+            migrationBuilder.DropTable(
+                name: "Songs");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
