@@ -29,7 +29,7 @@ namespace SmartRadio.Services.Implementations
 
         public async Task<User> AddFriend(string userId, string friendId)
         {
-            var user = await this.db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await this.db.Users.Include(u => u.Friends).FirstOrDefaultAsync(u => u.Id == userId);
             var friend = await this.db.Users.FirstOrDefaultAsync(u => u.Id == friendId);
             var userFriend = new UserFriend()
             {
@@ -46,9 +46,9 @@ namespace SmartRadio.Services.Implementations
 
         public async Task DeleteFriend(string userId, string friendId)
         {
-            var user = await this.db.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
-            user.Friends.Remove(user.Friends.FirstOrDefault(uf => uf.Id2 == friendId));
+            var user = await this.db.Users.Include(u => u.Friends).FirstOrDefaultAsync(u => u.Id == userId);
+            var friend = user.Friends.FirstOrDefault(uf => uf.Id2 == friendId);
+            user.Friends.Remove(friend);
 
             await this.db.SaveChangesAsync();
         }

@@ -1,6 +1,9 @@
-﻿$(document).ready(function () {
-    let connection = new signalR.HubConnectionBuilder().withUrl("/FriendsActivity").build();
-    var userId = readCookie("userId");
+﻿var connection = new signalR.HubConnectionBuilder().withUrl("/FriendsActivity").build();
+var userId = null;
+
+$(document).ready(function () {
+    
+    userId = readCookie("userId");
 
     console.log("function: ", userId);
 
@@ -15,12 +18,18 @@
     connection.on("DisplayFriends", function (friends) {
         for (let friend of friends) {
             console.log(friend);
-            $("#friends").append($(`<li class="list-group-item d-flex justify-content-between align-items-center">
+            $("#friends").append($(`<li class="list-group-item d-flex justify-content-between align-items-center" id="friend-item-${friend.id}">
                                         <h5 class="mb-1">${friend.userName}</h5>
-                                        <p id="friend-${friend.userName}" hidden>${friend.id}</p>
                                         <div>
                                             <span id="fm" class="badge badge-secondary">${friend.radioStation}</span>
-                                            <span>&#xFE19;</span>
+                                            <div class="btn-group dropright d-inline">
+                                                <span class="more" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    &#xFE19;
+                                                </span>
+                                                <div class="dropdown-menu">
+                                                    <p class="dropdown-item" onclick="deleteFriend('${friend.id}')">Unfollow</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </li>`));
         }
@@ -37,3 +46,14 @@ function readCookie(name) {
     }
     return null;
 }
+
+function deleteFriend(id) {
+    console.log("ej");
+    connection.invoke("DeleteFriend", userId, id).catch(function(err) {
+        return console.log(err.toString());
+    });
+}
+
+connection.on("DeleteFriend", function(userId, id) {
+    $(`#friend-item-${id}`).remove();
+});
