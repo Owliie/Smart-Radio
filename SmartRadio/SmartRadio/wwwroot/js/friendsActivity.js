@@ -48,7 +48,6 @@ function readCookie(name) {
 }
 
 function deleteFriend(id) {
-    console.log("ej");
     connection.invoke("DeleteFriend", userId, id).catch(function(err) {
         return console.log(err.toString());
     });

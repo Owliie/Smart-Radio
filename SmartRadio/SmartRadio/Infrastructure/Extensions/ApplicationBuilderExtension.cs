@@ -59,6 +59,14 @@ namespace SmartRadio.Infrastructure.Extensions
                                 UserName = "radio",
                                 Email = "radio@gmail.com"
                             };
+                            await userManager.CreateAsync(pesho, "test12");
+                            
+                            await userManager.CreateAsync(mario, "test12");
+                            
+                            await userManager.CreateAsync(misho, "test12");
+                            
+                            await userManager.CreateAsync(radio, "test12");
+                            await db.SaveChangesAsync();
 
                             pesho.Friends.Add(new UserFriend()
                             {
@@ -70,12 +78,9 @@ namespace SmartRadio.Infrastructure.Extensions
                                 User2 = misho
                             });
 
-                            await userManager.CreateAsync(pesho, "test12");
-                            await userManager.CreateAsync(mario, "test12");
-                            await userManager.CreateAsync(misho, "test12");
-                            await userManager.CreateAsync(radio, "test12");
-                            await userManager.AddToRoleAsync(radio, "Radio");
+                            await db.SaveChangesAsync();
 
+                            await userManager.AddToRoleAsync(radio, "Radio");
                             await db.SaveChangesAsync();
                         }
                     }).Wait();
