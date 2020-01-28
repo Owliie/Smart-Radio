@@ -49,14 +49,14 @@ namespace SmartRadio.Hubs
 
         public async Task AddFriend(string userId, string friendId)
         {
-            await this.friendService.AddFriend(userId, friendId);
-            await this.Clients.Group(userId).SendAsync("AddFriend", userId, friendId);
+            var friend = await this.friendService.AddFriend(userId, friendId);
+            await this.Clients.Group(userId).SendAsync("AddFriend", friend);
         }
 
         public async Task DeleteFriend(string userId, string friendId)
         {
             await this.friendService.DeleteFriend(userId, friendId);
-            await this.Clients.Group(userId).SendAsync("DeleteFriend", userId, friendId);
+            await this.Clients.Group(userId).SendAsync("DeleteFriend", friendId);
         }
     }
 }

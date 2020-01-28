@@ -18,23 +18,36 @@ $(document).ready(function () {
     connection.on("DisplayFriends", function (friends) {
         for (let friend of friends) {
             console.log(friend);
-            $("#friends").append($(`<li class="list-group-item d-flex justify-content-between align-items-center" id="friend-item-${friend.id}">
-                                        <h5 class="mb-1">${friend.userName}</h5>
-                                        <div>
-                                            <span id="fm" class="badge badge-secondary">${friend.radioStation}</span>
-                                            <div class="btn-group dropright d-inline">
-                                                <span class="more" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    &#xFE19;
-                                                </span>
-                                                <div class="dropdown-menu">
-                                                    <p class="dropdown-item" onclick="deleteFriend('${friend.id}')">Unfollow</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>`));
+            $("#friends").append(friendInfo(friend));
         }
     });
+
+    connection.on("DeleteFriend", function (id) {
+        $(`#friend-item-${id}`).remove();
+    });
+
+    connection.on("AddFriend", function (friend) {
+        $("#friends").append(friendInfo(friend));
+        $(`#search-result-${friend.id}`).remove();
+    });
 });
+
+function friendInfo(friend) {
+    return $(`<li class="list-group-item d-flex justify-content-between align-items-center" id="friend-item-${friend.id}">
+                <h5 class="mb-1">${friend.userName}</h5>
+                <div>
+                    <span id="fm" class="badge badge-secondary">${friend.radioStation}</span>
+                    <div class="btn-group dropright d-inline">
+                        <span class="more" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            &#xFE19;
+                        </span>
+                        <div class="dropdown-menu">
+                            <p class="dropdown-item" onclick="deleteFriend('${friend.id}')">Unfollow</p>
+                        </div>
+                    </div>
+                </div>
+            </li>`);
+}
 
 function readCookie(name) {
     var nameEQ = name + "=";
@@ -53,7 +66,8 @@ function deleteFriend(id) {
     });
 }
 
-connection.on("DeleteFriend", function(userId, id) {
-    $(`#friend-item-${id}`).remove();
-});
-
+function addFriend(id) {
+    connection.invoke("AddFriend", userId, id).catch(function(err) {
+        return console.log(err.toString());
+    });
+}

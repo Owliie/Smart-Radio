@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SmartRadio.Data;
@@ -11,6 +12,7 @@ using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Controllers
 {
+    [Authorize]
     public class SearchController : Controller
     {
         private readonly ISearchService searchService;
@@ -33,13 +35,15 @@ namespace SmartRadio.Controllers
             return this.Json(people);
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Search(string name)
         {
             var people = this.searchService
                 .GetUsersByName(this.userManager.GetUserId(this.User), name)
                 .ProjectTo<SearchByNameListViewModel>()
                 .ToList();
+
+            this.ViewData["Search"] = name;
 
             return this.View(people);
         }
