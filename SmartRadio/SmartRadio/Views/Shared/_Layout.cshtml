@@ -57,10 +57,11 @@
                 <div class="row">
                     <div class="col">
                         <div class="row">
-                            <form asp-controller="Search" asp-action="Search" class="w-100">
+                            <form asp-controller="Search" asp-action="Search" class="w-100" autocomplete="off">
                                 <div class="form-row align-items-center">
                                     <div class="col-7">
-                                        <input class="form-control" placeholder="Search for friends..." type="text" name="SearchString">
+                                        <input id="people-search" class="form-control" placeholder="Search for friends..." type="text" name="SearchString">
+                                        <ul id="search-results" class="list-group"></ul>
                                     </div>
                                     <div class="col-auto">
                                         <input class="btn btn-outline-success" type="submit" value="Search" />
@@ -112,6 +113,7 @@
     <script src="js/signalr/dist/browser/signalr.js" type="text/javascript"></script>
     <script src="js/signalr/dist/browser/signalr.min.js" type="text/javascript"></script>
     <script src="js/friendsActivity.js" type="text/javascript"></script>
+    <script src="js/search.js" type="text/javascript"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

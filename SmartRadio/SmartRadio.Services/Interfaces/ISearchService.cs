@@ -8,6 +8,6 @@ namespace SmartRadio.Services.Interfaces
 {
     public interface ISearchService
     {
-        IQueryable<User> GetUsersByName(string username);
+        IQueryable<User> GetUsersByName(string userId, string username, int? limit = null);
     }
 }

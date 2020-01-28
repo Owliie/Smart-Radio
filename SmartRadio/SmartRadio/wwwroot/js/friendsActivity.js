@@ -56,3 +56,4 @@ function deleteFriend(id) {
 connection.on("DeleteFriend", function(userId, id) {
     $(`#friend-item-${id}`).remove();
 });
+
