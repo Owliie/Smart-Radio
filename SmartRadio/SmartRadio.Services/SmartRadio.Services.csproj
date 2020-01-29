@@ -8,4 +8,13 @@
     <ProjectReference Include="..\SmartRadio.Data\SmartRadio.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\..\..\..\Users\Eti Tsvetkova\.nuget\packages\mathnet.numerics\4.9.0\lib\netstandard2.0\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio">
+      <HintPath>..\..\..\..\Users\Eti Tsvetkova\.nuget\packages\naudio\1.9.0\lib\netstandard2.0\NAudio.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

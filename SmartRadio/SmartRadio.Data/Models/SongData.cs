@@ -26,5 +26,7 @@ namespace SmartRadio.Data.Models
 
         [Required]
         public string RadioStation { get; set; }
+
+        public ICollection<SongFingerprint> Fingerprints { get; set; } = new HashSet<SongFingerprint>();
     }
 }

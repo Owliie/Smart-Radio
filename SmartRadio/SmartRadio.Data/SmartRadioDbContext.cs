@@ -10,6 +10,8 @@ namespace SmartRadio.Data
 
         public DbSet<SongData> Songs { get; set; }
 
+        public DbSet<SongFingerprint> Fingerprints { get; set; }
+
         public SmartRadioDbContext(DbContextOptions<SmartRadioDbContext> options)
             : base(options)
         {
@@ -36,6 +38,11 @@ namespace SmartRadio.Data
                 .HasOne(sd => sd.Listener)
                 .WithMany()
                 .HasForeignKey(sd => sd.ListenerId);
+
+            builder.Entity<SongFingerprint>()
+                .HasOne(sf => sf.Song)
+                .WithMany(sd => sd.Fingerprints)
+                .HasForeignKey(sf => sf.SongId);
         }
     }
 }
