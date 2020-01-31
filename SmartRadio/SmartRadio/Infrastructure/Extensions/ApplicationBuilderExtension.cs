@@ -59,6 +59,7 @@ namespace SmartRadio.Infrastructure.Extensions
                                 UserName = "radio",
                                 Email = "radio@gmail.com"
                             };
+
                             await userManager.CreateAsync(pesho, "test12");
                             
                             await userManager.CreateAsync(mario, "test12");
@@ -79,6 +80,17 @@ namespace SmartRadio.Infrastructure.Extensions
                             });
 
                             await db.SaveChangesAsync();
+
+                            var song = new SongData()
+                            {
+                                Name = "Hands up",
+                                Artist = "City wolf",
+                                Date = DateTime.Today,
+                                Listener = pesho,
+                                RadioStation = "101.2"
+                            };
+
+                            db.Songs.Add(song);
 
                             await userManager.AddToRoleAsync(radio, "Radio");
                             await db.SaveChangesAsync();

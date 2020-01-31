@@ -23,14 +23,20 @@ namespace SmartRadio.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int? day, int? month, int? year)
         {
+            var date = DateTime.Today;
+            if (day != null && month != null && year != null)
+            {
+                date = new DateTime(year.Value, month.Value, day.Value);
+            }
+
             var songs = this.musicService
-                .GetSongsByDay(this.userManager.GetUserId(this.User), DateTime.Today)
+                .GetSongsByDay(this.userManager.GetUserId(this.User), date)
                 .ProjectTo<SongListViewModel>()
                 .ToList();
 
-            return View(songs);
+            return this.View(songs);
         }
     }
 }
