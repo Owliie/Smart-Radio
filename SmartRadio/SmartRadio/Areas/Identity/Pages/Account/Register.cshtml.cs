@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using SmartRadio.Data;
+using SmartRadio.Data.Models;
 
 namespace SmartRadio.Areas.Identity.Pages.Account
 {

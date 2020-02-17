@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SmartRadio.Data.Models
 {
-    public class UserFriend
+    public class UserFollower
     {
         [Required]
         public string Id1 { get; set; }

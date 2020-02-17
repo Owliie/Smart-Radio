@@ -10,45 +10,45 @@ using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Services.Implementations
 {
-    public class FriendService : IFriendService
+    public class FollowerService : IFollowerService
     {
         private SmartRadioDbContext db;
 
-        public FriendService(SmartRadioDbContext db)
+        public FollowerService(SmartRadioDbContext db)
         {
             this.db = db;
         }
 
-        public IQueryable<User> GetFriends(string userId)
+        public IQueryable<User> GetFollowing(string userId)
         {
             return this.db.Users
                 .Where(u => u.Id == userId)
-                .SelectMany(u => u.Friends)
+                .SelectMany(u => u.Following)
                 .Select(uf => uf.User2);
         }
 
-        public async Task<User> AddFriend(string userId, string friendId)
+        public async Task<User> Follow(string userId, string friendId)
         {
-            var user = await this.db.Users.Include(u => u.Friends).FirstOrDefaultAsync(u => u.Id == userId);
-            var friend = await this.db.Users.FirstOrDefaultAsync(u => u.Id == friendId);
-            var userFriend = new UserFriend()
+            var user = await this.db.Users.Include(u => u.Following).FirstOrDefaultAsync(u => u.Id == userId);
+            var following = await this.db.Users.FirstOrDefaultAsync(u => u.Id == friendId);
+            var userFollower = new UserFollower()
             {
                 User1 = user,
-                User2 = friend
+                User2 = following
             };
 
-            user?.Friends.Add(userFriend);
+            user?.Following.Add(userFollower);
 
             await this.db.SaveChangesAsync();
 
-            return friend;
+            return following;
         }
 
-        public async Task DeleteFriend(string userId, string friendId)
+        public async Task UnFollow(string userId, string friendId)
         {
-            var user = await this.db.Users.Include(u => u.Friends).FirstOrDefaultAsync(u => u.Id == userId);
-            var friend = user.Friends.FirstOrDefault(uf => uf.Id2 == friendId);
-            user.Friends.Remove(friend);
+            var user = await this.db.Users.Include(u => u.Following).FirstOrDefaultAsync(u => u.Id == userId);
+            var userFollower = user.Following.FirstOrDefault(uf => uf.Id2 == friendId);
+            user.Following.Remove(userFollower);
 
             await this.db.SaveChangesAsync();
         }

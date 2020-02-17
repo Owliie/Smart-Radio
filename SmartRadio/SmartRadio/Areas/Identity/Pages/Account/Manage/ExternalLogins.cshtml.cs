@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SmartRadio.Data;
+using SmartRadio.Data.Models;
 
 namespace SmartRadio.Areas.Identity.Pages.Account.Manage
 {

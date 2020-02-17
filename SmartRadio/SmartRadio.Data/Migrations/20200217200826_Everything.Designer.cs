@@ -10,8 +10,8 @@ using SmartRadio.Data;
 namespace SmartRadio.Data.Migrations
 {
     [DbContext(typeof(SmartRadioDbContext))]
-    [Migration("20200123193129_AddedDbStructure")]
-    partial class AddedDbStructure
+    [Migration("20200217200826_Everything")]
+    partial class Everything
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -162,7 +162,26 @@ namespace SmartRadio.Data.Migrations
                     b.ToTable("Songs");
                 });
 
-            modelBuilder.Entity("SmartRadio.Data.Models.UserFriend", b =>
+            modelBuilder.Entity("SmartRadio.Data.Models.SongFingerprint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("Hash");
+
+                    b.Property<short>("Offset");
+
+                    b.Property<int>("SongId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SongId");
+
+                    b.ToTable("Fingerprints");
+                });
+
+            modelBuilder.Entity("SmartRadio.Data.Models.UserFollower", b =>
                 {
                     b.Property<string>("Id1");
 
@@ -281,10 +300,18 @@ namespace SmartRadio.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SmartRadio.Data.Models.UserFriend", b =>
+            modelBuilder.Entity("SmartRadio.Data.Models.SongFingerprint", b =>
+                {
+                    b.HasOne("SmartRadio.Data.Models.SongData", "Song")
+                        .WithMany("Fingerprints")
+                        .HasForeignKey("SongId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("SmartRadio.Data.Models.UserFollower", b =>
                 {
                     b.HasOne("SmartRadio.Data.User", "User1")
-                        .WithMany("Friends")
+                        .WithMany("Following")
                         .HasForeignKey("Id1")
                         .OnDelete(DeleteBehavior.Cascade);
 

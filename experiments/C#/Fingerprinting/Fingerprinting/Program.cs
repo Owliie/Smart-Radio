@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using MathNet.Numerics;
 using MathNet.Numerics.IntegralTransforms;
@@ -62,17 +63,17 @@ namespace Fingerprinting
 
             for (int i = 0; i < sampledChunkSize; i++)
             {
-                var time_vars = new Complex32[chunkSize];
+                var timeVars = new Complex32[chunkSize];
 
                 for (int j = 0; j < chunkSize; j++)
                 {
                     var num = new Complex32(song[i * chunkSize + j], 0);
 
-                    time_vars[j] = num;
+                    timeVars[j] = num;
                 }
 
-                Fourier.Forward(time_vars);
-                sampled[i] = time_vars;
+                Fourier.Forward(timeVars);
+                sampled[i] = timeVars;
             }
 
             return sampled;
@@ -117,9 +118,9 @@ namespace Fingerprinting
             }
             var hashed = new List<long>(new long[size]);
 
-//            var peaks = Enumerable.Repeat(Enumerable.Repeat(0L, frequencies.Count - 1).ToList(), size).ToList();
-//            var highest = Enumerable.Repeat(Enumerable.Repeat(0F, frequencies.Count).ToList(), size).ToList();
-//            var hashed = Enumerable.Repeat(0L, size).ToList();
+            //            var peaks = Enumerable.Repeat(Enumerable.Repeat(0L, frequencies.Count - 1).ToList(), size).ToList();
+            //            var highest = Enumerable.Repeat(Enumerable.Repeat(0F, frequencies.Count).ToList(), size).ToList();
+            //            var hashed = Enumerable.Repeat(0L, size).ToList();
 
             for (int i = 0; i < sampled.GetLength(0); i++)
             {
@@ -201,10 +202,10 @@ namespace Fingerprinting
             var eminem1 = Fingerprint(Sample(GetBytesOfSong(eminem1Path), sampleSize));
             var eminem2 = Fingerprint(Sample(GetBytesOfSong(eminem2Path), sampleSize));
             var eminem3 = Fingerprint(Sample(GetBytesOfSong(eminem3Path), sampleSize));
-//            Console.WriteLine(String.Join(" ", epic.Take(20)));
-//            Console.WriteLine(String.Join(" ", epicBeginning.Take(20)));
-//            Console.WriteLine("epic - epic beginning: " + MatchMaking(epic, epicBeginning, 22174106058) * 100 / epicBeginning.Count + "%");
-            
+            Console.WriteLine(String.Join(" ", epic.Take(20)));
+            Console.WriteLine(String.Join(" ", epicBeginning.Take(20)));
+            Console.WriteLine("epic - epic beginning: " + MatchMaking(epic, epicBeginning, 22174106058) * 100 / epicBeginning.Count + "%");
+
             foreach (var epsilon in epsilons)
             {
                 Console.WriteLine();

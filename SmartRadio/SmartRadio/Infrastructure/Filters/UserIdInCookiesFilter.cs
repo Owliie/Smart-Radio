@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SmartRadio.Data;
+using SmartRadio.Data.Models;
 
 namespace SmartRadio.Infrastructure.Filters
 {

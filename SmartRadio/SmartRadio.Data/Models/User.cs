@@ -9,6 +9,6 @@ namespace SmartRadio.Data
     {
         public string RadioStation { get; set; }
 
-        public ICollection<UserFriend> Friends { get; set; } = new HashSet<UserFriend>();
+        public ICollection<UserFollower> Following { get; set; } = new HashSet<UserFollower>();
     }
 }

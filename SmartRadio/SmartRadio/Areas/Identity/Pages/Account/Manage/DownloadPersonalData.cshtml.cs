@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartRadio.Data;
+using SmartRadio.Data.Models;
 
 namespace SmartRadio.Areas.Identity.Pages.Account.Manage
 {

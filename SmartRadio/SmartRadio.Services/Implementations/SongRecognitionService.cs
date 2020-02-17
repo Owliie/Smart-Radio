@@ -63,6 +63,7 @@ namespace SmartRadio.Services.Implementations
                 Array.Resize(ref buffer, buffer.Length * 2);
             }
 
+            //trim 0s
             var firstIndex = 0;
             var lastIndex = buffer.Length - 1;
             while (buffer[firstIndex] == 0)

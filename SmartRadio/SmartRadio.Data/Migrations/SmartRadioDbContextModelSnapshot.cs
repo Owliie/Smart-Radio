@@ -179,7 +179,7 @@ namespace SmartRadio.Data.Migrations
                     b.ToTable("Fingerprints");
                 });
 
-            modelBuilder.Entity("SmartRadio.Data.Models.UserFriend", b =>
+            modelBuilder.Entity("SmartRadio.Data.Models.UserFollower", b =>
                 {
                     b.Property<string>("Id1");
 
@@ -306,10 +306,10 @@ namespace SmartRadio.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SmartRadio.Data.Models.UserFriend", b =>
+            modelBuilder.Entity("SmartRadio.Data.Models.UserFollower", b =>
                 {
                     b.HasOne("SmartRadio.Data.User", "User1")
-                        .WithMany("Friends")
+                        .WithMany("Following")
                         .HasForeignKey("Id1")
                         .OnDelete(DeleteBehavior.Cascade);
 

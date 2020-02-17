@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SmartRadio.Data;
+using SmartRadio.Data.Models;
 using SmartRadio.Models.SearchVieModels;
 using SmartRadio.Services.Interfaces;
 

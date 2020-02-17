@@ -15,10 +15,12 @@ namespace SmartRadio.Areas.Api.Controllers
     public class SongsController : ApiBaseController
     {
         private readonly ISongRecognitionService songRecognitionService;
+        private readonly IMusicService musicService;
 
-        public SongsController(ISongRecognitionService songRecognitionService)
+        public SongsController(ISongRecognitionService songRecognitionService, IMusicService musicService)
         {
             this.songRecognitionService = songRecognitionService;
+            this.musicService = musicService;
         }
 
         [HttpPost]

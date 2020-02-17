@@ -69,12 +69,12 @@ namespace SmartRadio.Infrastructure.Extensions
                             await userManager.CreateAsync(radio, "test12");
                             await db.SaveChangesAsync();
 
-                            pesho.Friends.Add(new UserFriend()
+                            pesho.Following.Add(new UserFollower()
                             {
                                 User2 = mario
                             });
 
-                            pesho.Friends.Add(new UserFriend()
+                            pesho.Following.Add(new UserFollower()
                             {
                                 User2 = misho
                             });

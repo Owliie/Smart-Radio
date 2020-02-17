@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartRadio.Data;
+using SmartRadio.Data.Models;
 using SmartRadio.Hubs;
 using SmartRadio.Infrastructure.Extensions;
 using SmartRadio.Infrastructure.Filters;
@@ -62,7 +63,7 @@ namespace SmartRadio
                 .AddRoleStore<RoleStore<IdentityRole, SmartRadioDbContext>>()
                 .AddUserStore<UserStore<User, IdentityRole, SmartRadioDbContext>>();
 
-            services.AddTransient<IFriendService, FriendService>();
+            services.AddTransient<IFollowerService, FollowerService>();
             services.AddTransient<IMusicService, MusicService>();
             services.AddTransient<ISearchService, SearchService>();
 
@@ -92,7 +93,8 @@ namespace SmartRadio
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<FriendsActivityHub>("/FriendsActivity");
+                routes.MapHub<FollowingActivityHub>("/FollowingActivity");
+                routes.MapHub<MusicHub>("/MusicListing");
             });
 
             app.UseMvc(routes =>

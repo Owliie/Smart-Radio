@@ -6,7 +6,7 @@ namespace SmartRadio.Data
 {
     public class SmartRadioDbContext : IdentityDbContext<User>
     {
-        public DbSet<UserFriend> Friends { get; set; }
+        public DbSet<UserFollower> Friends { get; set; }
 
         public DbSet<SongData> Songs { get; set; }
 
@@ -21,17 +21,17 @@ namespace SmartRadio.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<UserFriend>()
+            builder.Entity<UserFollower>()
                 .HasOne(uf => uf.User1)
-                .WithMany(u => u.Friends)
+                .WithMany(u => u.Following)
                 .HasForeignKey(uf => uf.Id1);
 
-            builder.Entity<UserFriend>()
+            builder.Entity<UserFollower>()
                 .HasOne(uf => uf.User2)
                 .WithMany()
                 .HasForeignKey(uf => uf.Id2);
 
-            builder.Entity<UserFriend>()
+            builder.Entity<UserFollower>()
                 .HasKey(uf => new {uf.Id1, uf.Id2});
 
             builder.Entity<SongData>()
