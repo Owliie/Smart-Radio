@@ -6,7 +6,7 @@ namespace SmartRadio.Data
 {
     public class SmartRadioDbContext : IdentityDbContext<User>
     {
-        public DbSet<UserFollower> Friends { get; set; }
+        public DbSet<UserFollower> Following { get; set; }
 
         public DbSet<SongData> Songs { get; set; }
 

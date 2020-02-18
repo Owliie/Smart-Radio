@@ -155,7 +155,7 @@ namespace SmartRadio.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Friends",
+                name: "Following",
                 columns: table => new
                 {
                     Id1 = table.Column<string>(nullable: false),
@@ -163,15 +163,15 @@ namespace SmartRadio.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Friends", x => new { x.Id1, x.Id2 });
+                    table.PrimaryKey("PK_Following", x => new { x.Id1, x.Id2 });
                     table.ForeignKey(
-                        name: "FK_Friends_AspNetUsers_Id1",
+                        name: "FK_Following_AspNetUsers_Id1",
                         column: x => x.Id1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Friends_AspNetUsers_Id2",
+                        name: "FK_Following_AspNetUsers_Id2",
                         column: x => x.Id2,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -267,8 +267,8 @@ namespace SmartRadio.Data.Migrations
                 column: "SongId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friends_Id2",
-                table: "Friends",
+                name: "IX_Following_Id2",
+                table: "Following",
                 column: "Id2");
 
             migrationBuilder.CreateIndex(
@@ -298,7 +298,7 @@ namespace SmartRadio.Data.Migrations
                 name: "Fingerprints");
 
             migrationBuilder.DropTable(
-                name: "Friends");
+                name: "Following");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

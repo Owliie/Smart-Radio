@@ -189,7 +189,7 @@ namespace SmartRadio.Data.Migrations
 
                     b.HasIndex("Id2");
 
-                    b.ToTable("Friends");
+                    b.ToTable("Following");
                 });
 
             modelBuilder.Entity("SmartRadio.Data.User", b =>

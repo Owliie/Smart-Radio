@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Web;
 using Microsoft.AspNetCore.Http;
 using SmartRadio.Areas.Api.Models;
 using SmartRadio.Data.Models;
@@ -15,12 +12,10 @@ namespace SmartRadio.Areas.Api.Controllers
     public class SongsController : ApiBaseController
     {
         private readonly ISongRecognitionService songRecognitionService;
-        private readonly IMusicService musicService;
 
-        public SongsController(ISongRecognitionService songRecognitionService, IMusicService musicService)
+        public SongsController(ISongRecognitionService songRecognitionService)
         {
             this.songRecognitionService = songRecognitionService;
-            this.musicService = musicService;
         }
 
         [HttpPost]

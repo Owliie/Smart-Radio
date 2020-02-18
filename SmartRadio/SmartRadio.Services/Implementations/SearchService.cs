@@ -20,9 +20,9 @@ namespace SmartRadio.Services.Implementations
 
         public IQueryable<User> GetUsersByName(string userId, string username, int? limit = null)
         {
-            var userFriends = this.db.Users.Where(u => u.Id == userId).SelectMany(u => u.Following).Select(uf => uf.Id2);
+            var followingUsers = this.db.Users.Where(u => u.Id == userId).SelectMany(u => u.Following).Select(uf => uf.Id2);
             var query = this.db.Users
-                .Where(u => u.UserName.Contains(username) && !userFriends.Contains(u.Id) && u.Id != userId)
+                .Where(u => u.UserName.Contains(username) && !followingUsers.Contains(u.Id) && u.Id != userId)
                 .OrderBy(u => u.UserName);
 
             return limit.HasValue ? query.Take(limit.Value) : query;

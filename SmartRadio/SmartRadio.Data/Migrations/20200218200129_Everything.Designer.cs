@@ -10,7 +10,7 @@ using SmartRadio.Data;
 namespace SmartRadio.Data.Migrations
 {
     [DbContext(typeof(SmartRadioDbContext))]
-    [Migration("20200217200826_Everything")]
+    [Migration("20200218200129_Everything")]
     partial class Everything
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -191,7 +191,7 @@ namespace SmartRadio.Data.Migrations
 
                     b.HasIndex("Id2");
 
-                    b.ToTable("Friends");
+                    b.ToTable("Following");
                 });
 
             modelBuilder.Entity("SmartRadio.Data.User", b =>
