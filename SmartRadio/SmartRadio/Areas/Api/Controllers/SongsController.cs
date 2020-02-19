@@ -12,10 +12,12 @@ namespace SmartRadio.Areas.Api.Controllers
     public class SongsController : ApiBaseController
     {
         private readonly ISongRecognitionService songRecognitionService;
+        private readonly IOuterMusicRecognitionService outerMusicRecognitionService;
 
-        public SongsController(ISongRecognitionService songRecognitionService)
+        public SongsController(ISongRecognitionService songRecognitionService, IOuterMusicRecognitionService outerMusicRecognitionService)
         {
             this.songRecognitionService = songRecognitionService;
+            this.outerMusicRecognitionService = outerMusicRecognitionService;
         }
 
         [HttpPost]
@@ -25,6 +27,7 @@ namespace SmartRadio.Areas.Api.Controllers
             {
                 var tempPath = "./temp.mp3";
                 var result = new SongData();
+                var outerResult = "";
                 using (var stream = new FileStream(tempPath, FileMode.Create))
                 {
                     await songPart.CopyToAsync(stream);
@@ -33,6 +36,7 @@ namespace SmartRadio.Areas.Api.Controllers
                 try
                 {
                     result = await this.songRecognitionService.GetMetadata(tempPath);
+                    outerResult = this.outerMusicRecognitionService.GetMetadataFromFile(tempPath);
                 }
                 catch (Exception e)
                 {
@@ -50,6 +54,10 @@ namespace SmartRadio.Areas.Api.Controllers
                         Name = result.Name,
                         Artist = result.Artist
                     });
+                }
+                else
+                {
+                    Console.WriteLine(outerResult);
                 }
             }
 
