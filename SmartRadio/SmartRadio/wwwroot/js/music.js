@@ -1,15 +1,18 @@
 ﻿var userId = null;
 
-$(document).ready(function() {
+$(document).ready(function () {
     var connection = new signalR.HubConnectionBuilder().withUrl("/MusicListing").build();
 
     userId = readCookie("userId");
 
-    connection.start().then(function() {
-        connection.invoke("JoinRoom", userId).catch(function(err) {
+    updateSelectedDate();
+    $("#datepicker").datepicker("option", "maxDate", 0);
+
+    connection.start().then(function () {
+        connection.invoke("JoinRoom", userId).catch(function (err) {
             return console.error(err.toString());
         });
-    }).catch(function(err) {
+    }).catch(function (err) {
         return console.error(err.toString());
     });
 
@@ -20,7 +23,7 @@ $(document).ready(function() {
             var month = getParameterByName("month");
             var year = getParameterByName("year");
 
-            if (day !== now.getDate() || month !== now.getMonth()+1 || year !== now.getYear()) {
+            if (day !== now.getDate() || month !== now.getMonth() + 1 || year !== now.getFullYear()) {
                 return;
             }
         }
@@ -48,4 +51,17 @@ function formatAMPM(date) {
     minutes = minutes < 10 ? '0' + minutes : minutes;
     var strTime = hours + ':' + minutes + ' ' + ampm;
     return strTime;
+}
+
+function updateSelectedDate() {
+    var day = getParameterByName("day");
+
+    if (day) {
+        var month = getParameterByName("month");
+        var year = getParameterByName("year");
+        let newDate = new Date(year, month - 1, day);
+        $("#datepicker").datepicker("setDate", newDate);
+
+        $("#date").append(`${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`);
+    }
 }
