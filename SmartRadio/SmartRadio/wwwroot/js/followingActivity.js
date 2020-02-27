@@ -1,8 +1,9 @@
-﻿var connection = new signalR.HubConnectionBuilder().withUrl("/FollowingActivity").build();
-var userId = null;
+﻿var userId = null;
+var connection = null;
 
 $(document).ready(function () {
-    
+    connection = new signalR.HubConnectionBuilder().withUrl("/FollowingActivity").build();
+
     userId = readCookie("userId");
 
     connection.start().then(function () {
@@ -28,10 +29,9 @@ $(document).ready(function () {
         $("#following").append(followingInfo(following));
         $(`#search-result-${following.id}`).remove();
     });
-});
 
-function followingInfo(following) {
-    return $(`<li class="list-group-item d-flex justify-content-between align-items-center" id="following-item-${following.id}">
+    function followingInfo(following) {
+        return $(`<li class="list-group-item d-flex justify-content-between align-items-center" id="following-item-${following.id}">
                 <h5 class="mb-1">${following.userName}</h5>
                 <div>
                     <span id="fm" class="badge badge-secondary">${following.radioStation}</span>
@@ -45,16 +45,19 @@ function followingInfo(following) {
                     </div>
                 </div>
             </li>`);
-}
+    }
+
+
+});
 
 function unFollow(id) {
-    connection.invoke("unFollow", userId, id).catch(function(err) {
+    connection.invoke("UnFollow", userId, id).catch(function (err) {
         return console.log(err.toString());
     });
 }
 
 function follow(id) {
-    connection.invoke("follow", userId, id).catch(function(err) {
+    connection.invoke("Follow", userId, id).catch(function (err) {
         return console.log(err.toString());
     });
 }

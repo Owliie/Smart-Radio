@@ -184,10 +184,11 @@ namespace Fingerprinting
             var eminem2Path = @"C:\git\Smart-Radio\experiments\songs\eminem2.mp3";
             var eminem3Path = @"C:\git\Smart-Radio\experiments\songs\eminem3.mp3";
 
-            var epsilons = new long[] { 2174106058, 3174106058,
+            var epsilons = new long[] {
+//                2174106058, 3174106058,
 //                12174106058, 2174106058, 12000000, 13000000, 14000000,
 //                15000000, 16000000, 17000000, 18000000, 19000000, 20000000, 21000000,
-                26000000, 23000000, 24000000, 29000000, 30000000,
+//                26000000, 23000000, 24000000, 29000000, 30000000,
 //                23000000, 24000000, 25000000, 26000000,
                 27000000 };
 
@@ -202,9 +203,9 @@ namespace Fingerprinting
             var eminem1 = Fingerprint(Sample(GetBytesOfSong(eminem1Path), sampleSize));
             var eminem2 = Fingerprint(Sample(GetBytesOfSong(eminem2Path), sampleSize));
             var eminem3 = Fingerprint(Sample(GetBytesOfSong(eminem3Path), sampleSize));
-            Console.WriteLine(String.Join(" ", epic.Take(20)));
-            Console.WriteLine(String.Join(" ", epicBeginning.Take(20)));
-            Console.WriteLine("epic - epic beginning: " + MatchMaking(epic, epicBeginning, 22174106058) * 100 / epicBeginning.Count + "%");
+//            Console.WriteLine(String.Join(" ", epic.Take(20)));
+//            Console.WriteLine(String.Join(" ", epicBeginning.Take(20)));
+//            Console.WriteLine("epic - epic beginning: " + MatchMaking(epic, epicBeginning, 22174106058) * 100 / epicBeginning.Count + "%");
 
             foreach (var epsilon in epsilons)
             {
@@ -217,6 +218,7 @@ namespace Fingerprinting
                 Console.WriteLine("eminem - eminem 1: " + MatchMaking(eminem, eminem1, epsilon) * 100 / eminem1.Count + "%");
                 Console.WriteLine("eminem - eminem 2: " + MatchMaking(eminem, eminem2, epsilon) * 100 / eminem2.Count + "%");
                 Console.WriteLine("eminem - eminem 3: " + MatchMaking(eminem, eminem3, epsilon) * 100 / eminem3.Count + "%");
+                Console.WriteLine("end");
             }
         }
     }

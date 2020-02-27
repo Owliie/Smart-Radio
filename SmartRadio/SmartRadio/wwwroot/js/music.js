@@ -1,7 +1,7 @@
-﻿var connection = new signalR.HubConnectionBuilder().withUrl("/MusicListing").build();
-var userId = null;
+﻿var userId = null;
 
 $(document).ready(function() {
+    var connection = new signalR.HubConnectionBuilder().withUrl("/MusicListing").build();
 
     userId = readCookie("userId");
 
