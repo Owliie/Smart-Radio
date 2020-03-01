@@ -28,6 +28,11 @@ namespace SmartRadio.Controllers
             var date = DateTime.Today;
             if (day != null && month != null && year != null)
             {
+                if (year.Value > date.Year || (month.Value > date.Month || day.Value > date.Day))
+                {
+                    return this.BadRequest();
+                }
+
                 date = new DateTime(year.Value, month.Value, day.Value);
             }
 

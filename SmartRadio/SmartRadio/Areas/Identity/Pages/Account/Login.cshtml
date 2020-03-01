@@ -45,7 +45,7 @@
             </form>
         </section>
     </div>
-    <div class="col-md-6 col-md-offset-2">
+    <div class="col-md-6 col-md-offset-2" id="external-service">
         <section>
             <h4>Use another service to log in.</h4>
             <hr />
@@ -79,4 +79,8 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        $("#external-service").remove();
+    </script>
 }
