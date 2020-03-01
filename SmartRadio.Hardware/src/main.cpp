@@ -17,6 +17,7 @@
 #include "AudioGeneratorMP3.h"
 #include "AudioOutputI2S.h"
 #include "extflash.h"
+#include "fatflash.h"
 
 #include "utilities.h"
 
@@ -28,11 +29,12 @@
 #define PIN_SPI_HD GPIO_NUM_21   // PIN 7 - IO3 - /HOLD - /RESET
 #define PIN_SPI_SCK GPIO_NUM_18  // PIN 6 - CLK - CLK
 #define PIN_SPI_SS GPIO_NUM_5    // PIN 1 - /CS - /CS
+#define MOUNT_POINT_FAT "/fatflash"
 
 #define VOLUME_PIN 27
 
-const char *SSID = "elsys-students";
-const char *PASSWORD = "elsys-bg.org";
+const char *SSID = "Gerginov";
+const char *PASSWORD = "59199878";
 
 int last_read_volume = 0;
 
@@ -49,14 +51,15 @@ AudioFileSourceICYStream *file;
 AudioFileSourceBuffer *buff;
 AudioOutputI2S *out;
 
-ExtFlash flash;
+ExtFlash extflash;
+FatFlash fatflash;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 7200, 60000);
 
 SSD1306Wire oled(0x3c, 33, 32, GEOMETRY_128_32);
 
-// Called when a metadata event occurs (i.e. an ID3 tag, an ICY block, etc.
+// Called when a metadata event occurs (i.e. an ID3 tag, an ICY block, etc.)
 void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string)
 {
     const char *ptr = reinterpret_cast<const char *>(cbData);
@@ -71,11 +74,9 @@ void MDCallback(void *cbData, const char *type, bool isUnicode, const char *stri
     Serial.flush();
 }
 
-// Called when there's a warning or error (like a buffer underflow or decode hiccup)
 void StatusCallback(void *cbData, int code, const char *string)
 {
     const char *ptr = reinterpret_cast<const char *>(cbData);
-    // Note that the string may be in PROGMEM, so copy it to RAM for Serial.printf
     char s1[64];
     strncpy_P(s1, string, sizeof(s1));
     s1[sizeof(s1) - 1] = 0;
@@ -99,7 +100,7 @@ void setup_oled()
     oled.setFont(ArialMT_Plain_10);
 }
 
-void setup_spi()
+void setup_external_fat()
 {
     ext_flash_config_t cfg =
             {
@@ -118,14 +119,31 @@ void setup_spi()
                 .capacity = 0
             };
     
-    esp_err_t err = flash.init(&cfg);
+    esp_err_t err = extflash.init(&cfg);
 
     if(err != ESP_OK) {
         Serial.println("Flash initialization failed.");
         for(;;);
     }
 
-    Serial.printf("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", flash.sector_size(), flash.chip_size());
+    fat_flash_config_t fat_cfg =
+    {
+        .flash = &extflash,
+        .base_path = MOUNT_POINT_FAT,
+        .open_files = 4,
+        .auto_format = true
+    };
+
+    err = fatflash.init(&fat_cfg);
+
+    if(err != ESP_OK) {
+        Serial.println("External FAT initalization failed.");
+        for(;;);
+    }
+
+
+
+    Serial.printf("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", extflash.sector_size(), extflash.chip_size());
 }
 
 void setup_wifi()
@@ -144,7 +162,7 @@ void setup_wifi()
         Serial.println("...Connecting to WiFi");
         delay(1000);
     }
-    Serial.println("Connected");
+    Serial.printf("Connected (%s)\n", WiFi.localIP().toString().c_str());
 }
 
 void setup_ntp()
@@ -179,7 +197,7 @@ void handle_volume()
     }
 }
 
-void drive_oled(void *arg)
+void drive_oled(void *)
 {
     for (;;)
     {
@@ -199,17 +217,37 @@ void drive_oled(void *arg)
     }
 }
 
+void record_mp3_to_flash(void *) {
+    char *filename = MOUNT_POINT_FAT "/test.mp3";
+    FILE *f = fopen(MOUNT_POINT_FAT "/test.mp3", "wb");
+
+    HTTPClient client;
+    client.begin("https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3");
+
+    client.GET();
+
+    Serial.printf("Payload size: %d\n", client.getSize());
+
+    int messageSize = client.getSize();
+    char buffer[messageSize];
+    client.getStream().readBytes(buffer, messageSize);
+    fwrite(buffer, sizeof(char), messageSize, f);
+
+    fclose(f);
+    vTaskSuspend(NULL);
+}
+
 void setup()
 {
     setup_serial();
-    setup_spi();
+    setup_external_fat();
     setup_gpio();
     setup_oled();
     setup_wifi();
     setup_ntp();
     setup_audio_transmission();
     xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
-    // xTaskCreatePinnedToCore();
+    xTaskCreatePinnedToCore(record_mp3_to_flash, "MP3_RECORDER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
 }
 
 void loop()
