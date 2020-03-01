@@ -12,6 +12,7 @@
 
 #include <SSD1306Wire.h>
 #include <NTPClient.h>
+#include "AudioFileSourceSPIFFS.h"
 #include "AudioFileSourceICYStream.h"
 #include "AudioFileSourceBuffer.h"
 #include "AudioGeneratorMP3.h"
@@ -102,6 +103,7 @@ void setup_oled()
 
 void setup_external_fat()
 {
+    SPIFFS.begin();
     ext_flash_config_t cfg =
             {
                 .vspi = true,
@@ -184,7 +186,7 @@ void setup_audio_transmission()
 
     mp3 = new AudioGeneratorMP3();
     mp3->RegisterStatusCB(StatusCallback, (void *)"mp3");
-    mp3->begin(buff, out);
+    // mp3->begin(buff, out);
 }
 
 void handle_volume()
@@ -218,22 +220,8 @@ void drive_oled(void *)
 }
 
 void record_mp3_to_flash(void *) {
-    char *filename = MOUNT_POINT_FAT "/test.mp3";
-    FILE *f = fopen(MOUNT_POINT_FAT "/test.mp3", "wb");
+    
 
-    HTTPClient client;
-    client.begin("https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3");
-
-    client.GET();
-
-    Serial.printf("Payload size: %d\n", client.getSize());
-
-    int messageSize = client.getSize();
-    char buffer[messageSize];
-    client.getStream().readBytes(buffer, messageSize);
-    fwrite(buffer, sizeof(char), messageSize, f);
-
-    fclose(f);
     vTaskSuspend(NULL);
 }
 
@@ -246,6 +234,18 @@ void setup()
     setup_wifi();
     setup_ntp();
     setup_audio_transmission();
+    HTTPClient client;
+    File f = SPIFFS.open("/fatflash/test.mp3", "w");
+    client.begin("https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3");
+    client.GET();
+    client.writeToStream(&f);
+    Serial.println("Downloaded");
+    f.close();
+    client.end();
+
+    AudioFileSourceSPIFFS *fs = new AudioFileSourceSPIFFS("/fatflash/test.mp3");
+    mp3->begin(fs, out);
+
     xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
     xTaskCreatePinnedToCore(record_mp3_to_flash, "MP3_RECORDER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
 }
