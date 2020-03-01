@@ -16,14 +16,23 @@
 #include "AudioFileSourceBuffer.h"
 #include "AudioGeneratorMP3.h"
 #include "AudioOutputI2S.h"
+#include "extflash.h"
 
 #include "utilities.h"
 
 #define MAX_STACK_SIZE 10000
+
+#define PIN_SPI_MOSI GPIO_NUM_23 // PIN 5 - IO0 - DI
+#define PIN_SPI_MISO GPIO_NUM_19 // PIN 2 - IO1 - DO
+#define PIN_SPI_WP GPIO_NUM_17   // PIN 3 - IO2 - /WP
+#define PIN_SPI_HD GPIO_NUM_21   // PIN 7 - IO3 - /HOLD - /RESET
+#define PIN_SPI_SCK GPIO_NUM_18  // PIN 6 - CLK - CLK
+#define PIN_SPI_SS GPIO_NUM_5    // PIN 1 - /CS - /CS
+
 #define VOLUME_PIN 27
 
-const char *SSID = "Gerginov";
-const char *PASSWORD = "59199878";
+const char *SSID = "elsys-students";
+const char *PASSWORD = "elsys-bg.org";
 
 int last_read_volume = 0;
 
@@ -39,6 +48,8 @@ AudioFileSourceICYStream *file;
 
 AudioFileSourceBuffer *buff;
 AudioOutputI2S *out;
+
+ExtFlash flash;
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 7200, 60000);
@@ -64,7 +75,7 @@ void MDCallback(void *cbData, const char *type, bool isUnicode, const char *stri
 void StatusCallback(void *cbData, int code, const char *string)
 {
     const char *ptr = reinterpret_cast<const char *>(cbData);
-    // Note that the string may be in PROGMEM, so copy it to RAM for printf
+    // Note that the string may be in PROGMEM, so copy it to RAM for Serial.printf
     char s1[64];
     strncpy_P(s1, string, sizeof(s1));
     s1[sizeof(s1) - 1] = 0;
@@ -88,13 +99,33 @@ void setup_oled()
     oled.setFont(ArialMT_Plain_10);
 }
 
-void setup_spiffs()
+void setup_spi()
 {
-    if (!SPIFFS.begin())
-    {
-        Serial.println("An Error has occurred while mounting SPIFFS");
-        return;
+    ext_flash_config_t cfg =
+            {
+                .vspi = true,
+                .sck_io_num = PIN_SPI_SCK,
+                .miso_io_num = PIN_SPI_MISO,
+                .mosi_io_num = PIN_SPI_MOSI,
+                .ss_io_num = PIN_SPI_SS,
+                .hd_io_num = PIN_SPI_HD,
+                .wp_io_num = PIN_SPI_WP,
+                .speed_mhz = (int8_t) 40,
+                .dma_channel = 1,
+                .queue_size = (int8_t) 4,
+                .max_dma_size = 8192,
+                .sector_size = 0,
+                .capacity = 0
+            };
+    
+    esp_err_t err = flash.init(&cfg);
+
+    if(err != ESP_OK) {
+        Serial.println("Flash initialization failed.");
+        for(;;);
     }
+
+    Serial.printf("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", flash.sector_size(), flash.chip_size());
 }
 
 void setup_wifi()
@@ -171,13 +202,14 @@ void drive_oled(void *arg)
 void setup()
 {
     setup_serial();
+    setup_spi();
     setup_gpio();
     setup_oled();
-    setup_spiffs();
     setup_wifi();
     setup_ntp();
     setup_audio_transmission();
     xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
+    // xTaskCreatePinnedToCore();
 }
 
 void loop()
