@@ -12,7 +12,7 @@
 
 #include <SSD1306Wire.h>
 #include <NTPClient.h>
-#include "AudioFileSourceSPIFFS.h"
+#include "AudioFileSourceExtFlash.h"
 #include "AudioFileSourceICYStream.h"
 #include "AudioFileSourceBuffer.h"
 #include "AudioGeneratorMP3.h"
@@ -105,45 +105,45 @@ void setup_external_fat()
 {
     SPIFFS.begin();
     ext_flash_config_t cfg =
-            {
-                .vspi = true,
-                .sck_io_num = PIN_SPI_SCK,
-                .miso_io_num = PIN_SPI_MISO,
-                .mosi_io_num = PIN_SPI_MOSI,
-                .ss_io_num = PIN_SPI_SS,
-                .hd_io_num = PIN_SPI_HD,
-                .wp_io_num = PIN_SPI_WP,
-                .speed_mhz = (int8_t) 40,
-                .dma_channel = 1,
-                .queue_size = (int8_t) 4,
-                .max_dma_size = 8192,
-                .sector_size = 0,
-                .capacity = 0
-            };
-    
+        {
+            .vspi = true,
+            .sck_io_num = PIN_SPI_SCK,
+            .miso_io_num = PIN_SPI_MISO,
+            .mosi_io_num = PIN_SPI_MOSI,
+            .ss_io_num = PIN_SPI_SS,
+            .hd_io_num = PIN_SPI_HD,
+            .wp_io_num = PIN_SPI_WP,
+            .speed_mhz = (int8_t)40,
+            .dma_channel = 1,
+            .queue_size = (int8_t)4,
+            .max_dma_size = 8192,
+            .sector_size = 0,
+            .capacity = 0};
+
     esp_err_t err = extflash.init(&cfg);
 
-    if(err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         Serial.println("Flash initialization failed.");
-        for(;;);
+        for (;;)
+            ;
     }
 
     fat_flash_config_t fat_cfg =
-    {
-        .flash = &extflash,
-        .base_path = MOUNT_POINT_FAT,
-        .open_files = 4,
-        .auto_format = true
-    };
+        {
+            .flash = &extflash,
+            .base_path = MOUNT_POINT_FAT,
+            .open_files = 4,
+            .auto_format = true};
 
     err = fatflash.init(&fat_cfg);
 
-    if(err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         Serial.println("External FAT initalization failed.");
-        for(;;);
+        for (;;)
+            ;
     }
-
-
 
     Serial.printf("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", extflash.sector_size(), extflash.chip_size());
 }
@@ -219,8 +219,8 @@ void drive_oled(void *)
     }
 }
 
-void record_mp3_to_flash(void *) {
-    
+void record_mp3_to_flash(void *)
+{
 
     vTaskSuspend(NULL);
 }
@@ -235,19 +235,25 @@ void setup()
     setup_ntp();
     setup_audio_transmission();
     HTTPClient client;
-    File f = SPIFFS.open("/fatflash/test.mp3", "w");
-    client.begin("https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3");
+    FILE *f = fopen(MOUNT_POINT_FAT "/test.mp3", "w");
+    client.begin("https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_5MG.mp3");
     client.GET();
-    client.writeToStream(&f);
-    Serial.println("Downloaded");
-    f.close();
+    char buffer[2048];
+    int size = 0;
+    do
+    {
+        size = client.getStreamPtr()->readBytes(buffer, 2048);
+
+        fwrite(buffer, sizeof(byte), size, f);
+    } while (size != 0);
+    fclose(f);
     client.end();
 
-    AudioFileSourceSPIFFS *fs = new AudioFileSourceSPIFFS("/fatflash/test.mp3");
-    mp3->begin(fs, out);
+    AudioFileSourceExtFlash *ext = new AudioFileSourceExtFlash(MOUNT_POINT_FAT "/test.mp3");
+    mp3->begin(ext, out);
 
-    xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
-    xTaskCreatePinnedToCore(record_mp3_to_flash, "MP3_RECORDER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
+    xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 0, NULL, 1);
+    xTaskCreatePinnedToCore(record_mp3_to_flash, "MP3_RECORDER", MAX_STACK_SIZE, NULL, 0, NULL, 1);
 }
 
 void loop()
