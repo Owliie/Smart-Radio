@@ -36,6 +36,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="#page6" onclick="goToPage(6)">Contacts</a>
+                        </li>
                     </ul>
                     @if (this.User.Identity.IsAuthenticated)
                     {

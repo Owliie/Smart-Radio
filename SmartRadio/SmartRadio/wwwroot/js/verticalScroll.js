@@ -21,11 +21,9 @@ function scrollToPage() {
         $(".page").unbind();
         if (e.originalEvent.wheelDelta / 120 > 0) {
             current_page--;
-            console.log("prev page coming");
             nextPage();
         } else {
             current_page++;
-            console.log("next page coming");
             nextPage();
         }
     };
@@ -36,13 +34,18 @@ function scrollArrow() {
     nextPage();
 }
 
+function goToPage(page) {
+    $(".page").unbind();
+    current_page = page;
+    nextPage();
+}
+
 function nextPage() {
     let valid = validate();
     scrollTopButton();
 
     if (valid) {
         let nextPage = "#page" + current_page;
-        console.log("page scroll animation");
         $('.page-wrapper').animate({
                 scrollTop: "+=" + ($(nextPage).offset().top - navHeight)
             },
@@ -51,8 +54,6 @@ function nextPage() {
             function() {
                 $(".page").bind("mousewheel", scrollToPage());
             });
-        console.log(nextPage + " " + $(nextPage).offset().top);
-        console.log('scrolling up !');
     } else {
         $(".page").bind("mousewheel", scrollToPage());
     }
@@ -61,11 +62,9 @@ function nextPage() {
 function validate() {
     if (current_page > max_pages) {
         current_page = max_pages;
-        console.log("max pages reset");
         return false;
     } else if (current_page < 1) {
         current_page = 1;
-        console.log("minimum page reached");
     }
     return true;
 }
