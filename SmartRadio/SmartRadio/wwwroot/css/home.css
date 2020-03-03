@@ -1,5 +1,7 @@
 ﻿html, body {
+    -moz-scroll-behavior: smooth;
     scroll-behavior: smooth;
+    margin-bottom: 0;
 }
 
 html {
@@ -15,6 +17,9 @@ table, tr, td {
 }
 
 .name-child {
+    -webkit-flex: 3;
+    -ms-flex: 3;
+    -o-flex: 3;
     flex: 3;
 }
 
@@ -24,14 +29,19 @@ table, tr, td {
     height: 100%;
     overflow-y: auto;
     display: block;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
+    position: relative;
+    top: 1em;
 }
 
 .page {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 95%;
     padding: 5% 5%;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
 }
 
 ::-webkit-scrollbar {
