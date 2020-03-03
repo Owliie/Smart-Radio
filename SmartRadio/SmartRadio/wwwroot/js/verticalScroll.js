@@ -21,9 +21,11 @@ function scrollToPage() {
         $(".page").unbind();
         if (e.originalEvent.wheelDelta / 120 > 0) {
             current_page--;
+            console.log("prev page coming");
             nextPage();
         } else {
             current_page++;
+            console.log("next page coming");
             nextPage();
         }
     };
@@ -38,27 +40,34 @@ function nextPage() {
     let valid = validate();
     scrollTopButton();
 
-    if (valid !== false) {
-        let next_page = "#page" + current_page;
-
+    if (valid) {
+        let nextPage = "#page" + current_page;
+        console.log("page scroll animation");
         $('.page-wrapper').animate({
-            scrollTop: "+=" + ($(next_page).offset().top - navHeight)
-        }, 800, 'swing', function () {
-            $(".page").bind("mousewheel", scrollToPage());
-        });
-        console.log(next_page + " " + $(next_page).offset().top);
+                scrollTop: "+=" + ($(nextPage).offset().top - navHeight)
+            },
+            800,
+            'swing',
+            function() {
+                $(".page").bind("mousewheel", scrollToPage());
+            });
+        console.log(nextPage + " " + $(nextPage).offset().top);
         console.log('scrolling up !');
+    } else {
+        $(".page").bind("mousewheel", scrollToPage());
     }
-
 }
 
 function validate() {
     if (current_page > max_pages) {
         current_page = max_pages;
+        console.log("max pages reset");
         return false;
     } else if (current_page < 1) {
         current_page = 1;
+        console.log("minimum page reached");
     }
+    return true;
 }
 
 function scrollTopButton() {
