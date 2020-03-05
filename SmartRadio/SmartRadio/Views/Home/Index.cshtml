@@ -6,9 +6,14 @@
 {
     <link type="text/css" rel="stylesheet" href="~/css/homeAuthenticated.css" />
 
-    <div>
+    <div class="text-center h-100 particles w-100 position-relative">
         <p>Hello, @this.User.Identity.Name</p>
     </div>
+
+    @section Scripts
+        {
+        <script type="text/javascript" src="~/js/textAnimation.js"></script>
+    }
 }
 else
 {
