@@ -1,14 +1,23 @@
 ﻿html, body {
     -moz-scroll-behavior: smooth;
     scroll-behavior: smooth;
-    margin-bottom: 0;
-    background: rgb(238,174,202);
-    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+    margin: 0 auto;
+    background: radial-gradient(circle, rgba(240,186,209,1) 15%, rgba(155,201,255,1) 100%);
     font-family: sans-serif
 }
 
 html {
     height: 90%;
+}
+
+.navbar {
+    position: fixed;
+    width: 100%;
+    z-index: 10000;
+}
+
+div.row {
+    margin-top: 0;
 }
 
 table, tr, td {
@@ -137,7 +146,8 @@ h2, p {
             -ms-transform: scale(1.2);
             -webkit-transform: scale(1.2);
             transform: scale(1.2);
-            background-color: #ebaecb;
+            /* background-color: #ebaecb; */
+            background-color: #eec1d4;
         }
 
         .icons ul li a:hover {
@@ -218,10 +228,6 @@ ion-icon {
     height: 30px;
 }
 
-.card-img-top {
-    max-height: 200px;
-}
-
 .github {
     color: black;
 }
@@ -232,4 +238,24 @@ ion-icon {
 
 .a-color-default {
     color: #26282f;
+}
+
+.radio-list {
+    font-size: 22pt;
+}
+
+.radio-list li {
+    margin: 15% auto;
+}
+
+.bigger {
+    -ms-transition: font-size 0.5s;
+    -o-transition: font-size 0.5s;
+    -webkit-transition: font-size 0.5s;
+    transition: font-size 0.5s;
+    height: 40px;
+}
+
+.bigger:hover {
+    font-size: 24pt;
 }
