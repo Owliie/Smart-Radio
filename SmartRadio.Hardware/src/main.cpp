@@ -1,16 +1,8 @@
 #include "definitions.h"
 #include "setup.h"
+#include "task_functions.h"
 #include "utilities.h"
-
-void record_mp3_to_flash(void *)
-{
-    vTaskSuspend(NULL);
-}
-
-void record_single_snippet(void *)
-{
-    vTaskSuspend(NULL);
-}
+#include "variables.h"
 
 void setup()
 {
@@ -41,7 +33,7 @@ void setup()
     mp3->begin(ext, out);
     */
 
-    // xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
+    xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
     xTaskCreatePinnedToCore(record_mp3_to_flash, "MP3_RECORDER", MAX_STACK_SIZE, NULL, 0, NULL, 1);
     // xTaskCreatePinnedToCore(record_single_snippet, "RECORD_SINGLE_SNIPPET", MAX_STACK_SIZE, NULL, 0, NULL, 1);
 }
