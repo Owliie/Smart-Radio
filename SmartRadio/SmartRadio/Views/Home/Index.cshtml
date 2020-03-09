@@ -2,27 +2,38 @@
     ViewData["Title"] = "Home Page";
 }
 
-<link type="text/css" rel="stylesheet" href="~/css/home.css" />
-
-@if (!this.User.Identity.IsAuthenticated)
+@if (this.User.Identity.IsAuthenticated)
 {
-    <div class="text-center">
-        <h1 class="display-4">Let me introduce you to Smart Radio!</h1>
+    <link type="text/css" rel="stylesheet" href="~/css/homeAuthenticated.css" />
+
+    <div class="text-center h-100 particles w-100 position-relative">
+        <p>Hello, @this.User.Identity.Name</p>
     </div>
+
+    @section Scripts
+        {
+        <script type="text/javascript" src="~/js/textAnimation.js"></script>
+    }
 }
 else
 {
+    <link type="text/css" rel="stylesheet" href="~/css/home.css" />
+
     <div class="page-wrapper">
-        <partial name="_HomePartial"/>
-        <partial name="_ContactsPartial"/>
+        <partial name="_HomePartial" />
+        <partial name="_RadioPartial" />
+        <partial name="_RadioStationsPartial" />
+        <partial name="_MusicRecognitionPartial" />
+        <partial name="_HistoryAndFriendsPartial" />
+        <partial name="_ContactsPartial" />
     </div>
 
     <button id="scrollToTop" title="Back to top" class="fixed-action-btn" onclick="scrollToHome()">
         <ion-icon name="home-outline"></ion-icon>
     </button>
-}
 
-@section Scripts
-    {
-    <script type="text/javascript" src="~/js/verticalScroll.js"></script>
+    @section Scripts
+        {
+        <script type="text/javascript" src="~/js/verticalScroll.js"></script>
+    }
 }

@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/followingActivity.css" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
 </head>
 <body>
     <header>
@@ -36,6 +37,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (!this.User.Identity.IsAuthenticated && this.ViewData["Title"].Equals("Home Page"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="#page6" onclick="goToPage(6)">Contacts</a>
+                            </li>
+                        }
                     </ul>
                     @if (this.User.Identity.IsAuthenticated)
                     {
@@ -63,9 +70,9 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container h-100">
         <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 h-100">
             @if (this.User.Identity.IsAuthenticated && (this.ViewData["Title"].Equals("Songs") || this.ViewData["Title"].Equals("Search")))
             {
                 <div class="row">
@@ -98,7 +105,7 @@
         </main>
     </div>
 
-    @if (!this.User.Identity.IsAuthenticated && (this.ViewData["Title"].Equals("Home Page")))
+    @if (this.User.Identity.IsAuthenticated && (this.ViewData["Title"].Equals("Home Page")))
     {
         <footer class="border-top footer text-muted">
             <div class="container">

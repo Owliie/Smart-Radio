@@ -13,7 +13,7 @@ using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Services.Implementations
 {
-    class SongRecognitionService : ISongRecognitionService
+    public class SongRecognitionService : ISongRecognitionService
     {
         private readonly SmartRadioDbContext db;
         private readonly List<int> Frequencies = new List<int> { 40, 80, 120, 180, 300 };
