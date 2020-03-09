@@ -1,5 +1,6 @@
 #include "definitions.h"
 #include "setup.h"
+#include "stream_callback.h"
 #include "variables.h"
 
 std::string message;
@@ -103,46 +104,23 @@ void setup_ntp()
     timeClient->begin();
 }
 
-// Called when a metadata event occurs (i.e. an ID3 tag, an ICY block, etc.)
-void MDCallback(void *cbData, const char *type, bool isUnicode, const char *string)
-{
-    const char *ptr = reinterpret_cast<const char *>(cbData);
-    char s1[32], s2[64];
-    strncpy_P(s1, type, sizeof(s1));
-    s1[sizeof(s1) - 1] = 0;
-    strncpy_P(s2, string, sizeof(s2));
-    s2[sizeof(s2) - 1] = 0;
-    log_i("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);
-    message = std::string(s2);
-    log_d("Text length on OLED: %d\n", oled->getStringWidth(s2));
-    Serial.flush();
-}
 
-void StatusCallback(void *cbData, int code, const char *string)
-{
-    const char *ptr = reinterpret_cast<const char *>(cbData);
-    char s1[64];
-    strncpy_P(s1, string, sizeof(s1));
-    s1[sizeof(s1) - 1] = 0;
-    log_w("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
-    Serial.flush();
-}
 
 void setup_audio_transmission()
 {
     audioLogger = &Serial;
     file = new AudioFileSourceICYStream(STREAM_URL);
-    file->RegisterMetadataCB(MDCallback, (void *)"ICY");
+    file->RegisterMetadataCB(metadata_callback, (void *)"ICY");
 
     buff = new AudioFileSourceBuffer(file, 32768);
-    buff->RegisterStatusCB(StatusCallback, (void *)"buffer");
+    buff->RegisterStatusCB(status_callback, (void *)"buffer");
 
     out = new AudioOutputI2S();
     out->SetPinout(GPIO_NUM_26, GPIO_NUM_25, GPIO_NUM_27);
     out->SetGain(0.05);
 
     mp3 = new AudioGeneratorMP3();
-    mp3->RegisterStatusCB(StatusCallback, (void *)"mp3");
+    mp3->RegisterStatusCB(status_callback, (void *)"mp3");
     mp3->begin(buff, out);
 }
 
