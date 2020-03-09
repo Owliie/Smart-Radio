@@ -26,7 +26,7 @@
 
 #define PIN_SPI_MOSI GPIO_NUM_23 // PIN 5 - IO0 - DI
 #define PIN_SPI_MISO GPIO_NUM_19 // PIN 2 - IO1 - DO
-#define PIN_SPI_WP GPIO_NUM_17   // PIN 3 - IO2 - /WP
+#define PIN_SPI_WP GPIO_NUM_22   // PIN 3 - IO2 - /WP
 #define PIN_SPI_HD GPIO_NUM_21   // PIN 7 - IO3 - /HOLD - /RESET
 #define PIN_SPI_SCK GPIO_NUM_18  // PIN 6 - CLK - CLK
 #define PIN_SPI_SS GPIO_NUM_5    // PIN 1 - /CS - /CS
@@ -69,9 +69,9 @@ void MDCallback(void *cbData, const char *type, bool isUnicode, const char *stri
     s1[sizeof(s1) - 1] = 0;
     strncpy_P(s2, string, sizeof(s2));
     s2[sizeof(s2) - 1] = 0;
-    Serial.printf("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);
+    log_i("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);
     message = std::string(s2);
-    Serial.printf("Text length on OLED: %d\n", oled.getStringWidth(s2));
+    log_d("Text length on OLED: %d\n", oled.getStringWidth(s2));
     Serial.flush();
 }
 
@@ -81,13 +81,8 @@ void StatusCallback(void *cbData, int code, const char *string)
     char s1[64];
     strncpy_P(s1, string, sizeof(s1));
     s1[sizeof(s1) - 1] = 0;
-    Serial.printf("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
+    log_w("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
     Serial.flush();
-}
-
-void setup_serial()
-{
-    Serial.begin(9600);
 }
 
 void setup_gpio()
@@ -103,7 +98,7 @@ void setup_oled()
 
 void setup_external_fat()
 {
-    SPIFFS.begin();
+    // SPIFFS.begin();
     ext_flash_config_t cfg =
         {
             .vspi = true,
@@ -124,7 +119,7 @@ void setup_external_fat()
 
     if (err != ESP_OK)
     {
-        Serial.println("Flash initialization failed.");
+        log_e("Flash initialization failed. (err: %d)\n", err);
         for (;;)
             ;
     }
@@ -140,17 +135,17 @@ void setup_external_fat()
 
     if (err != ESP_OK)
     {
-        Serial.println("External FAT initalization failed.");
+        log_e("External FAT initalization failed.");
         for (;;)
             ;
     }
 
-    Serial.printf("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", extflash.sector_size(), extflash.chip_size());
+    log_d("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", extflash.sector_size(), extflash.chip_size());
 }
 
 void setup_wifi()
 {
-    Serial.println("Connecting to WiFi");
+    log_d("Connecting to WiFi");
 
     WiFi.disconnect();
     WiFi.softAPdisconnect(true);
@@ -161,15 +156,22 @@ void setup_wifi()
     // Try forever
     while (WiFi.status() != WL_CONNECTED)
     {
-        Serial.println("...Connecting to WiFi");
+        log_d("...Connecting to WiFi");
         delay(1000);
     }
-    Serial.printf("Connected (%s)\n", WiFi.localIP().toString().c_str());
+    log_d("Connected (%s)\n", WiFi.localIP().toString().c_str());
 }
 
 void setup_ntp()
 {
     timeClient.begin();
+}
+
+void clear_audio_transmission() {
+    delete file;
+    delete buff;
+    delete out;
+    delete mp3;
 }
 
 void setup_audio_transmission()
@@ -178,15 +180,16 @@ void setup_audio_transmission()
     file = new AudioFileSourceICYStream(url);
     file->RegisterMetadataCB(MDCallback, (void *)"ICY");
 
-    buff = new AudioFileSourceBuffer(file, 2048);
+    buff = new AudioFileSourceBuffer(file, 32768);
     buff->RegisterStatusCB(StatusCallback, (void *)"buffer");
 
     out = new AudioOutputI2S();
+    out->SetPinout(GPIO_NUM_26, GPIO_NUM_25, GPIO_NUM_27);
     out->SetGain(0.05);
 
     mp3 = new AudioGeneratorMP3();
     mp3->RegisterStatusCB(StatusCallback, (void *)"mp3");
-    // mp3->begin(buff, out);
+    mp3->begin(buff, out);
 }
 
 void handle_volume()
@@ -225,25 +228,31 @@ void record_mp3_to_flash(void *)
     vTaskSuspend(NULL);
 }
 
+void record_single_snippet(void *)
+{
+    vTaskSuspend(NULL);
+}
+
 void setup()
 {
-    setup_serial();
     setup_external_fat();
     setup_gpio();
     setup_oled();
     setup_wifi();
     setup_ntp();
     setup_audio_transmission();
+    /*
     HTTPClient client;
     FILE *f = fopen(MOUNT_POINT_FAT "/test.mp3", "w");
     client.begin("https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_5MG.mp3");
     client.GET();
-    char buffer[2048];
+    char buffer[20480];
     int size = 0;
     do
     {
-        size = client.getStreamPtr()->readBytes(buffer, 2048);
+        size = client.getStreamPtr()->readBytes(buffer, 20480);
 
+        Serial.println(ESP.getFreeHeap());
         fwrite(buffer, sizeof(byte), size, f);
     } while (size != 0);
     fclose(f);
@@ -251,9 +260,11 @@ void setup()
 
     AudioFileSourceExtFlash *ext = new AudioFileSourceExtFlash(MOUNT_POINT_FAT "/test.mp3");
     mp3->begin(ext, out);
+    */
 
-    xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 0, NULL, 1);
+    xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
     xTaskCreatePinnedToCore(record_mp3_to_flash, "MP3_RECORDER", MAX_STACK_SIZE, NULL, 0, NULL, 1);
+    // xTaskCreatePinnedToCore(record_single_snippet, "RECORD_SINGLE_SNIPPET", MAX_STACK_SIZE, NULL, 0, NULL, 1);
 }
 
 void loop()
@@ -267,7 +278,8 @@ void loop()
     }
     else
     {
-        Serial.printf("MP3 done\n");
-        delay(1000);
+        log_i("MP3 done. Restarting...\n");
+        clear_audio_transmission();
+        setup_audio_transmission();
     }
 }
