@@ -30,6 +30,7 @@ function scrollToPage() {
 }
 
 function scrollArrow() {
+    $(".page").unbind();
     current_page++;
     nextPage();
 }
