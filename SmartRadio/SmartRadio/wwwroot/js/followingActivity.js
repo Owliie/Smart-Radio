@@ -7,14 +7,10 @@ $(document).ready(function () {
     userId = readCookie("userId");
 
     connection.on("DisplayFollowing", function (followingUsers) {
-        console.log(followingUsers);
-        console.log("AAAAAAAAAAAAAAAAAA");
-
         if (followingUsers.length === 0) {
             $("#following").text("You are not following anyone");
         } else {
             for (let following of followingUsers) {
-                console.log(following);
                 $("#following").append(followingInfo(following));
             }
         }
