@@ -46,7 +46,9 @@ bool AudioFileSourceExtFlash::isOpen()
 uint32_t AudioFileSourceExtFlash::getSize()
 {
     if (!f)
+    {
         return 0;
+    }
     uint32_t p = ftell(f);
     fseek(f, 0, SEEK_END);
     uint32_t len = ftell(f);
