@@ -2,8 +2,21 @@
     -moz-scroll-behavior: smooth;
     scroll-behavior: smooth;
     margin: 0 auto;
-    background: radial-gradient(circle, rgba(240,186,209,1) 15%, rgba(155,201,255,1) 100%);
-    font-family: sans-serif
+    
+    font-family: sans-serif;
+    color: #ffffff;
+    color: rgba(255, 255, 255, 0.8);
+    height: 100%;
+}
+
+#page1 {
+    background-color: rgb(247,119,84);
+    background-image: linear-gradient(317deg, rgba(247,119,84,1) 0%, rgba(83,125,145,1) 49%, rgba(164,209,200,1) 100%);
+}
+
+#page2 {
+    background: rgb(83,125,145);
+    background: linear-gradient(318deg, rgba(83,125,145,1) 0%, rgba(247,119,84,1) 100%);
 }
 
 html {
@@ -47,14 +60,15 @@ table, tr, td {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     position: relative;
-    top: 1em;
+    top: 0;
+    left: 0;
 }
 
 .page {
     position: relative;
     width: 100%;
-    height: 95%;
-    padding: 5% 5%;
+    height: 100%;
+    /* padding: 5% 5%; */
     -moz-box-sizing: border-box;
     box-sizing: border-box
 }
@@ -135,7 +149,7 @@ h2, p {
         flex: 1 1 10rem;
         padding: 15px 15px;
         margin: 15px;
-        box-shadow: 2px 3px 10px 5px #79aeed;
+        box-shadow: 2px 3px 10px 5px #584b42;
         -ms-transition: all .5s ease-in-out;
         -o-transition: all .5s ease-in-out;
         -webkit-transition: all .5s ease-in-out;
@@ -147,10 +161,13 @@ h2, p {
             -webkit-transform: scale(1.2);
             transform: scale(1.2);
             /* background-color: #ebaecb; */
-            background-color: #eec1d4;
+            background-color: #f77754;
         }
 
-        .icons ul li a:hover {
+        .icons ul li:hover, .icons ul li a:hover {
+            -ms-animation: hoverText 0.5s ease-in;
+            -webkit-animation: hoverText 0.5s ease-in;
+            animation: hoverText 0.5s ease-out;
             color: #26282f;
         }
 
@@ -210,7 +227,7 @@ h2, p {
     padding: 10px 15px;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    box-shadow: 4px 5px 10px 5px #79aeed;
+    box-shadow: 4px 5px 10px 5px #584b42;
 }
 
     .fixed-action-btn:hover ion-icon, .fixed-action-btn:hover {
@@ -237,16 +254,30 @@ ion-icon {
 }
 
 .a-color-default {
-    color: #26282f;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes hoverText {
+    0% {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    50% {
+        color: grey;
+    }
+
+    100% {
+        color: #26282f;
+    }
 }
 
 .radio-list {
     font-size: 22pt;
 }
 
-.radio-list li {
-    margin: 15% auto;
-}
+    .radio-list li {
+        margin: 15% auto;
+    }
 
 .bigger {
     -ms-transition: font-size 0.5s;
@@ -256,6 +287,26 @@ ion-icon {
     height: 40px;
 }
 
-.bigger:hover {
-    font-size: 24pt;
+    .bigger:hover {
+        font-size: 24pt;
+    }
+
+
+/* .container { */
+/*     width: 100vw !important; */
+/*     margin: 0; */
+/*     padding: 0; */
+/* } */
+
+main {
+    width: 100vw;
+}
+
+.page-content {
+    padding-top: 5%;
+    margin-bottom: 5%;
+    height: 90%;
+}
+.page > div {
+    height: 90%;
 }

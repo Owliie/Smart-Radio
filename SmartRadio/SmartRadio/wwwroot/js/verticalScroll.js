@@ -8,9 +8,10 @@ $(window).on("load", function () {
 
     navHeight = $("nav").height();
     var height = $(window).height() - navHeight;
-    $(".page-wrapper").css("height", height);
-
+//    $(".page-wrapper").css("height", height);
+    $("#wrapping-div").removeClass("container");
     $("#scrollToTop").hide();
+    $("main").removeClass("pb-3");
 
     max_pages = $(".page-wrapper").children().length;
     $(".page").bind("mousewheel", scrollToPage());
@@ -47,6 +48,33 @@ function nextPage() {
 
     if (valid) {
         let nextPage = "#page" + current_page;
+
+        $("body").removeProp("background");
+        $("html").removeProp("background");
+
+        let color;
+        let backgroundColor;
+
+        switch (current_page) {
+            case 1:
+                color = "transparent";
+                backgroundColor = "linear-gradient(34deg, rgba(247,119,84,1) 0%, rgba(83,125,145,1) 49%, rgba(164,209,200,1) 100%)";
+                break;
+            case 2:
+                color = "#f77754";
+                backgroundColor = "linear-gradient(36deg, rgba(83,125,145,1) 0%, rgba(247,119,84,1) 100%)";
+                break;
+            case 3:
+                color = "#537d91";
+                break;
+            case 4:
+                color = "#a4d1c8";
+                break;
+            default:
+                color = "transparent";
+                break;
+        }
+
         $('.page-wrapper').animate({
                 scrollTop: "+=" + ($(nextPage).offset().top - navHeight)
             },
@@ -54,7 +82,22 @@ function nextPage() {
             'swing',
             function() {
                 $(".page").bind("mousewheel", scrollToPage());
-            });
+                $("nav").css({
+                    "transition": "background-color 0.3s ease",
+                    "backgroundColor": color
+                });
+//                $("html").css({
+//                    "transition": "background 4s ease-in",
+//                    "background": backgroundColor
+//                });
+//                console.log(backgroundColor);
+//                $("body").css({
+//                    "transition": "all 4s ease-in",
+//                    "background": backgroundColor
+//                });
+            }
+            );
+
     } else {
         $(".page").bind("mousewheel", scrollToPage());
     }
@@ -78,6 +121,16 @@ function scrollTopButton() {
         $("#scrollToTop").fadeIn();
         scrollTop = true;
     }
+    let backgroundColor = "linear-gradient(317deg, rgba(247,119,84,1) 0%, rgba(83,125,145,1) 49%, rgba(164,209,200,1) 100%)";
+    $("nav").css("backgroundColor", "transparent");
+    $("html").css({
+        "transition": "background 4s ease-in",
+        "background": backgroundColor
+    });
+    $("body").css({
+        "transition": "all 4s ease-in",
+        "background": backgroundColor
+    });
 }
 
 function scrollToHome() {
