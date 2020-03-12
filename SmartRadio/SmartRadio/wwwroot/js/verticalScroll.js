@@ -1,4 +1,5 @@
 ﻿var current_page = 1;
+var prev_page = 1;
 var max_pages = 0;
 var menu_is_opened = true;
 var navHeight = 0;
@@ -7,10 +8,9 @@ var scrollTop = false;
 $(window).on("load", function () {
 
     navHeight = $("nav").height();
-    var height = $(window).height() - navHeight;
-//    $(".page-wrapper").css("height", height);
+ $("#scrollToTop").hide();
     $("#wrapping-div").removeClass("container");
-    $("#scrollToTop").hide();
+   
     $("main").removeClass("pb-3");
 
     max_pages = $(".page-wrapper").children().length;
@@ -58,11 +58,9 @@ function nextPage() {
         switch (current_page) {
             case 1:
                 color = "transparent";
-                backgroundColor = "linear-gradient(34deg, rgba(247,119,84,1) 0%, rgba(83,125,145,1) 49%, rgba(164,209,200,1) 100%)";
                 break;
             case 2:
                 color = "#f77754";
-                backgroundColor = "linear-gradient(36deg, rgba(83,125,145,1) 0%, rgba(247,119,84,1) 100%)";
                 break;
             case 3:
                 color = "#537d91";
@@ -70,34 +68,28 @@ function nextPage() {
             case 4:
                 color = "#a4d1c8";
                 break;
+            case 5:
+                color = "radial-gradient(circle, rgba(164, 209, 200, 1) 15 %, rgba(247, 119, 84, 1) 100 %)";
+                break;
             default:
-                color = "transparent";
+                color = "radial-gradient(circle, rgba(164, 209, 200, 1) 15 %, rgba(247, 119, 84, 1) 100 %)";
                 break;
         }
 
         $('.page-wrapper').animate({
-                scrollTop: "+=" + ($(nextPage).offset().top - navHeight)
-            },
+            scrollTop: "+=" + ($(nextPage).offset().top - navHeight)
+        },
             800,
             'swing',
-            function() {
+            function () {
                 $(".page").bind("mousewheel", scrollToPage());
                 $("nav").css({
                     "transition": "background-color 0.3s ease",
                     "backgroundColor": color
                 });
-//                $("html").css({
-//                    "transition": "background 4s ease-in",
-//                    "background": backgroundColor
-//                });
-//                console.log(backgroundColor);
-//                $("body").css({
-//                    "transition": "all 4s ease-in",
-//                    "background": backgroundColor
-//                });
             }
-            );
-
+        );
+        prev_page = current_page;
     } else {
         $(".page").bind("mousewheel", scrollToPage());
     }
@@ -109,6 +101,9 @@ function validate() {
         return false;
     } else if (current_page < 1) {
         current_page = 1;
+        return false;
+    }else if (current_page === prev_page) {
+        return false;
     }
     return true;
 }
@@ -121,16 +116,7 @@ function scrollTopButton() {
         $("#scrollToTop").fadeIn();
         scrollTop = true;
     }
-    let backgroundColor = "linear-gradient(317deg, rgba(247,119,84,1) 0%, rgba(83,125,145,1) 49%, rgba(164,209,200,1) 100%)";
     $("nav").css("backgroundColor", "transparent");
-    $("html").css({
-        "transition": "background 4s ease-in",
-        "background": backgroundColor
-    });
-    $("body").css({
-        "transition": "all 4s ease-in",
-        "background": backgroundColor
-    });
 }
 
 function scrollToHome() {
