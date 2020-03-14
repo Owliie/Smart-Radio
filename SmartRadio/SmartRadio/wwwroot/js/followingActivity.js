@@ -8,7 +8,7 @@ $(document).ready(function () {
 
     connection.on("DisplayFollowing", function (followingUsers) {
         if (followingUsers.length === 0) {
-            $("#following").text("You are not following anyone");
+            $("#following").append("<li class=\"list-group-item d-flex justify-content-between align-items-center\"><h4>You are not following anybody</h4></li>");
         } else {
             for (let following of followingUsers) {
                 $("#following").append(followingInfo(following));

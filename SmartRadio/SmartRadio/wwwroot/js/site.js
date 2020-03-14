@@ -25,3 +25,8 @@ function readCookie(name) {
     }
     return null;
 }
+
+$("#people-search").on("change", function () {
+    console.log(this.val());
+    $("#search-btn").removeAttr("disabled");
+})

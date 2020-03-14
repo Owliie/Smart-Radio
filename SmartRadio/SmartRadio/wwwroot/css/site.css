@@ -81,3 +81,14 @@ nav a.nav-link {
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #a4d1c8;
     outline: 0 none;
 }
+
+#dropdownMenuButton {
+    color: #537d91 !important;
+    border-color: #537d91 !important;
+}
+
+#dropdownMenuButton:hover {
+    color: white !important;
+    background-color: #537d91 !important;
+    border-color: #537d91 !important;
+}
