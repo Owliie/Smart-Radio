@@ -76,7 +76,7 @@
             @if (this.User.Identity.IsAuthenticated && (this.ViewData["Title"].Equals("Songs") || this.ViewData["Title"].Equals("Search")))
             {
                 <div class="row">
-                    <div class="col">
+                    <div class="col position-relative">
                         <div class="row">
                             <form asp-controller="Search" asp-action="Search" class="w-75" method="post" autocomplete="off">
                                 <div class="input-group">

@@ -92,3 +92,9 @@ nav a.nav-link {
     background-color: #537d91 !important;
     border-color: #537d91 !important;
 }
+
+#search-results {
+    max-height: 200px;
+    overflow: hidden;
+    overflow-y: auto;
+}
