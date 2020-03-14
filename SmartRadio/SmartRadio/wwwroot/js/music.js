@@ -66,3 +66,21 @@ function updateSelectedDate() {
         $("#date").text(`${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}`);
     }
 }
+
+// keep dropdown open
+
+jQuery('.dropdown-toggle').on('click', function (e) {
+    $(this).next().toggle();
+});
+jQuery('.dropdown-menu.keep-open').on('click', function (e) {
+    e.stopPropagation();
+});
+
+if (true) {
+    $('body').attr('tabindex', '0');
+}
+else {
+    alertify.confirm().set({ 'reverseButtons': true });
+    alertify.prompt().set({ 'reverseButtons': true });
+}
+
