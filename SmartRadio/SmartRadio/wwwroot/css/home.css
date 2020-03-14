@@ -85,7 +85,8 @@ table, tr, td {
     height: 100%;
     /* padding: 5% 5%; */
     -moz-box-sizing: border-box;
-    box-sizing: border-box
+    box-sizing: border-box;
+
 }
 
 ::-webkit-scrollbar {
@@ -320,7 +321,7 @@ main {
 .page-content {
     padding-top: 5%;
     margin-bottom: 5%;
-    height: 90%;
+    height: 50%;
 }
 .page > div {
     height: 90%;
@@ -328,4 +329,8 @@ main {
 
 .card {
     color: #26282f;
+}
+
+.pic {
+    width: 300px;
 }

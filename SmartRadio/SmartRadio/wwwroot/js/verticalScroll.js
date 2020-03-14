@@ -5,7 +5,8 @@ var menu_is_opened = true;
 var navHeight = 0;
 var scrollTop = false;
 
-$(window).on("load", function () {
+$(document).ready(function () {
+    $("nav").removeClass("background");
 
     navHeight = $("nav").height();
  $("#scrollToTop").hide();
@@ -49,11 +50,7 @@ function nextPage() {
     if (valid) {
         let nextPage = "#page" + current_page;
 
-        $("body").removeProp("background");
-        $("html").removeProp("background");
-
         let color;
-        let backgroundColor;
 
         switch (current_page) {
             case 1:
@@ -69,10 +66,10 @@ function nextPage() {
                 color = "#a4d1c8";
                 break;
             case 5:
-                color = "radial-gradient(circle, rgba(164, 209, 200, 1) 15 %, rgba(247, 119, 84, 1) 100 %)";
+                color = "#f77754";
                 break;
             default:
-                color = "radial-gradient(circle, rgba(164, 209, 200, 1) 15 %, rgba(247, 119, 84, 1) 100 %)";
+                color = "transparent";
                 break;
         }
 

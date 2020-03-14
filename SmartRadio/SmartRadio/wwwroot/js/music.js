@@ -63,6 +63,6 @@ function updateSelectedDate() {
         let newDate = new Date(year, month - 1, day);
         $("#datepicker").datepicker("setDate", newDate);
 
-        $("#date").text(`${newDate.getDate()}/${newDate.getMonth()+1}/${newDate.getFullYear()}`);
+        $("#date").text(`${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}`);
     }
 }
