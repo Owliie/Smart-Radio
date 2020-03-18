@@ -1,16 +1,18 @@
 ﻿var current_page = 1;
+var prev_page = 1;
 var max_pages = 0;
 var menu_is_opened = true;
 var navHeight = 0;
 var scrollTop = false;
 
-$(window).on("load", function () {
+$(document).ready(function () {
+    $("nav").removeClass("background");
 
     navHeight = $("nav").height();
-    var height = $(window).height() - navHeight;
-    $(".page-wrapper").css("height", height);
-
-    $("#scrollToTop").hide();
+ $("#scrollToTop").hide();
+    $("#wrapping-div").removeClass("container");
+   
+    $("main").removeClass("pb-3");
 
     max_pages = $(".page-wrapper").children().length;
     $(".page").bind("mousewheel", scrollToPage());
@@ -30,6 +32,7 @@ function scrollToPage() {
 }
 
 function scrollArrow() {
+    $(".page").unbind();
     current_page++;
     nextPage();
 }
@@ -46,14 +49,44 @@ function nextPage() {
 
     if (valid) {
         let nextPage = "#page" + current_page;
+
+        let color;
+
+        switch (current_page) {
+            case 1:
+                color = "transparent";
+                break;
+            case 2:
+                color = "#f77754";
+                break;
+            case 3:
+                color = "#537d91";
+                break;
+            case 4:
+                color = "#a4d1c8";
+                break;
+            case 5:
+                color = "#f77754";
+                break;
+            default:
+                color = "transparent";
+                break;
+        }
+
         $('.page-wrapper').animate({
-                scrollTop: "+=" + ($(nextPage).offset().top - navHeight)
-            },
+            scrollTop: "+=" + ($(nextPage).offset().top - navHeight)
+        },
             800,
             'swing',
-            function() {
+            function () {
                 $(".page").bind("mousewheel", scrollToPage());
-            });
+                $("nav").css({
+                    "transition": "background-color 0.3s ease",
+                    "backgroundColor": color
+                });
+            }
+        );
+        prev_page = current_page;
     } else {
         $(".page").bind("mousewheel", scrollToPage());
     }
@@ -65,6 +98,9 @@ function validate() {
         return false;
     } else if (current_page < 1) {
         current_page = 1;
+        return false;
+    }else if (current_page === prev_page) {
+        return false;
     }
     return true;
 }
@@ -77,6 +113,7 @@ function scrollTopButton() {
         $("#scrollToTop").fadeIn();
         scrollTop = true;
     }
+    $("nav").css("backgroundColor", "transparent");
 }
 
 function scrollToHome() {

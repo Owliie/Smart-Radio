@@ -15,6 +15,26 @@
 
     mouseX = $w.width() / 2, mouseY = $w.height() / 2;
 
+$(document).ready(() => {
+    welcomingParticles();
+});
+
+function welcomingParticles() {
+    var spots = [];
+
+    for (var i = 0; i < 20; i++) {
+        var posx = (Math.random() * $(document).width()).toFixed();
+        var posy = (Math.random() * $(document).height()).toFixed();
+        spots.push({ posx, posy });
+    }
+    console.log("spots:");
+    for (var spot of spots) {
+        mouseX = spot.posx;
+        mouseY = spot.posy;
+        createParticle(event);
+    }
+}
+
 function updateParticleCount() {
     $('.particle-count > .number').text(particleCount);
 };

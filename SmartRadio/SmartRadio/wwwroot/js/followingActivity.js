@@ -6,19 +6,15 @@ $(document).ready(function () {
 
     userId = readCookie("userId");
 
-    connection.start().then(function () {
-        connection.invoke("JoinRoom", userId).catch(function (err) {
-            return console.error(err.toString());
-        });
-    }).catch(function (err) {
-        return console.error(err.toString());
-    });
-
     connection.on("DisplayFollowing", function (followingUsers) {
-        for (let following of followingUsers) {
-            console.log(following);
-            $("#following").append(followingInfo(following));
+        if (followingUsers.length === 0) {
+            $("#following").append("<li class=\"list-group-item d-flex justify-content-between align-items-center\"><h4>You are not following anybody</h4></li>");
+        } else {
+            for (let following of followingUsers) {
+                $("#following").append(followingInfo(following));
+            }
         }
+        
     });
 
     connection.on("UnFollow", function (id) {
@@ -28,6 +24,16 @@ $(document).ready(function () {
     connection.on("Follow", function (following) {
         $("#following").append(followingInfo(following));
         $(`#search-result-${following.id}`).remove();
+    });
+
+
+
+    connection.start().then(function () {
+        connection.invoke("JoinRoom", userId).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }).catch(function (err) {
+        return console.error(err.toString());
     });
 
     function followingInfo(following) {
@@ -46,8 +52,6 @@ $(document).ready(function () {
                 </div>
             </li>`);
     }
-
-
 });
 
 function unFollow(id) {

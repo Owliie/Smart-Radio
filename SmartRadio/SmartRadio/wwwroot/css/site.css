@@ -57,3 +57,57 @@ body {
     height: 60px;
     line-height: 60px; /* Vertically center the text there */
 }
+
+.btn-important, .btn-primary {
+    border: none;
+    background-color: #f77754;
+    color: white;
+}
+
+.a-info {
+    color: #584b42;
+}
+
+.a-info.active, .btn-outline-important {
+    background-color: transparent !important;
+    border: 1px solid #f77754;
+    color: #584b42 !important;
+}
+
+.a-info.active:hover, .btn-outline-important:hover {
+    background-color: #f77754 !important;
+    border: 1px solid #f77754;
+    color: white !important;
+}
+
+.background {
+    background: rgb(83,125,145);
+    background: linear-gradient(135deg, rgba(83,125,145,1) 0%, rgba(107,124,136,1) 15%, rgba(137,123,125,1) 23%, rgba(177,122,110,1) 30%, rgba(204,121,100,1) 33%, rgba(225,120,92,1) 37%, rgba(247,119,84,1) 46%, rgba(242,124,91,1) 54%, rgba(199,171,152,1) 64%, rgba(184,186,172,1) 73%, rgba(178,193,180,1) 82%, rgba(164,209,200,1) 100%);
+}
+
+nav a.nav-link {
+    color: white !important;
+}
+
+.form-control:focus {
+    border-color: #a4d1c8;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #a4d1c8;
+    outline: 0 none;
+}
+
+#dropdownMenuButton {
+    color: white !important;
+    border-color: #537d91 !important;
+}
+
+#dropdownMenuButton:hover {
+    color: white !important;
+    background-color: #537d91 !important;
+    border-color: #537d91 !important;
+}
+
+#search-results {
+    max-height: 200px;
+    overflow: hidden;
+    overflow-y: auto;
+}
