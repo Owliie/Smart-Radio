@@ -36,7 +36,7 @@ void record_snippet(void *)
     // start connection and send HTTP header
     int httpCode = http.GET();
     // create buffer for read
-    uint8_t buff[128] = {0};
+    uint8_t buff[150] = {0};
     int total = 0;
     uint8_t *output = (uint8_t *)ps_malloc(256000);
 
@@ -65,8 +65,8 @@ void record_snippet(void *)
 
                 if (size)
                 {
-                    // read up to 128 byte
-                    int c = stream->readBytes(buff, ((size > 128) ? 128 : size));
+                    // read up to 150 byte
+                    int c = stream->readBytes(buff, ((size > 150) ? 150 : size));
                     memcpy(output + total, (void *)buff, c);
                     // write it to Serial
                     // USE_SERIAL.write(buff, c);
@@ -134,13 +134,13 @@ void record_snippet(void *)
         char *base64_output = base64_encode(temp, allocation_size, &outToSend);
         log_d("outToSend = %d", outToSend);
         // log_d("%s", base64_output);
-        client.print(String(base64_output));
+        client.print(base64_output);
         free(temp);
         free(base64_output);
         delay(10);
     }
 
-    client.flush();
+    // client.flush();
     client.stop();
 
     free(output);

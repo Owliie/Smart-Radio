@@ -1,7 +1,6 @@
 #ifndef __BASE64_ENCODE_PSRAM_H__
 #define __BASE64_ENCODE_PSRAM_H__
 
-#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include "esp32-hal-psram.h"
