@@ -94,8 +94,6 @@ void record_snippet(void *)
 
     log_d("total = %d", total);
 
-    WiFiClientSecure client;
-
     // Generate header
     String header;
     header = F("POST /api/values HTTP/1.1\r\n");
@@ -106,21 +104,37 @@ void record_snippet(void *)
     header += F("\r\n");
     header += F("accept-encoding: gzip, deflate\r\n");
     header += F("Connection: keep-alive\r\n");
-    header += F("Content-Length: ");
-    header += String(get_output_length(total));
-    header += "\r\n";
-    header += "\r\n";
 
     log_d("Header:\n%s", header.c_str());
+
+    WiFiClientSecure client;
+    client.setNoDelay(true);
 
     if (!client.connect("192.168.0.105", 443, INT32_MAX))
     {
         log_e("Connection failed");
     }
 
-    client.setNoDelay(true);
+    int content_length = 0;
 
-    client.print(header.c_str());
+    for (int i = 0, temp = total, allocation_size; temp > 0; i += allocation_size, temp -= allocation_size)
+    {
+        size_t outToSend;
+        allocation_size = temp > 9000 ? 9000 : temp;
+
+        uint8_t *tempBuff = (uint8_t *)ps_malloc(allocation_size);
+        memcpy(tempBuff, output + i, allocation_size);
+        base64_encode(tempBuff, allocation_size, &outToSend);
+        content_length += outToSend;
+        free(tempBuff);
+    }
+
+    header += "Content-Length: ";
+    header += String(content_length);
+    header += "\r\n";
+    header += "\r\n";
+
+    client.print(header);
 
     for (int i = 0, allocation_size; total > 0; i += allocation_size, total -= allocation_size)
     {
@@ -128,14 +142,14 @@ void record_snippet(void *)
         allocation_size = total > 9000 ? 9000 : total;
         log_d("allocation_size = %d", allocation_size);
 
-        uint8_t *temp = (uint8_t *)ps_malloc(allocation_size);
-        memcpy(temp, output + i, allocation_size);
+        uint8_t *tempBuff = (uint8_t *)ps_malloc(allocation_size);
+        memcpy(tempBuff, output + i, allocation_size);
 
-        char *base64_output = base64_encode(temp, allocation_size, &outToSend);
+        char *base64_output = base64_encode(tempBuff, allocation_size, &outToSend);
         log_d("outToSend = %d", outToSend);
         // log_d("%s", base64_output);
         client.print(base64_output);
-        free(temp);
+        free(tempBuff);
         free(base64_output);
         delay(10);
     }
