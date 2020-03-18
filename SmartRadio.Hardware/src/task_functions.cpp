@@ -1,4 +1,5 @@
 #include "task_functions.h"
+#define USE_SERIAL Serial
 
 void drive_oled(void *)
 {
@@ -22,20 +23,126 @@ void drive_oled(void *)
 
 void record_snippet(void *)
 {
-    AudioFileSourceICYStream *recordFile = new AudioFileSourceICYStream(STREAM_URL);
-    recordFile->RegisterMetadataCB(metadata_callback, (void *)"ICY");
+    remove(MOUNT_POINT_FAT "/snippet.mp3");
+    HTTPClient http;
 
-    AudioFileSourceBuffer *recordBuff = new AudioFileSourceBuffer(file, 32768);
-    recordBuff->RegisterStatusCB(status_callback, (void *)"extflash_buffer");
+    USE_SERIAL.print("[HTTP] begin...\n");
 
-    AudioGeneratorMP3 *recordMp3 = new AudioGeneratorMP3();
-    recordMp3->RegisterStatusCB(status_callback, (void *)"extflash_mp3");
+    // configure server and url
+    http.begin(STREAM_URL);
+    //http.begin("192.168.1.12", 80, "/test.html");
 
-    AudioOutputExtFlash *recordOut = new AudioOutputExtFlash();
-    recordOut->SetFilename(MOUNT_POINT_FAT "/snippet.mp3");
+    USE_SERIAL.print("[HTTP] GET...\n");
+    // start connection and send HTTP header
+    int httpCode = http.GET();
+    // create buffer for read
+    uint8_t buff[128] = {0};
+    int total = 0;
+    uint8_t *output = (uint8_t *)ps_malloc(256000);
 
-    recordMp3->begin(recordBuff, recordOut);
-    
-    for (;;);
+    if (httpCode > 0)
+    {
+        // HTTP header has been send and Server response header has been handled
+        USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
+
+        // file found at server
+        if (httpCode == HTTP_CODE_OK)
+        {
+
+            // get lenght of document (is -1 when Server sends no Content-Length header)
+            int len = http.getSize();
+
+            // get tcp stream
+            WiFiClient *stream = http.getStreamPtr();
+
+            // read all data from server
+            while (http.connected() && (len > 0 || len == -1) && total < 250000)
+            {
+                // get available data size
+                size_t size = stream->available();
+
+                log_d("Stream size: %d (total = %d)", size, total);
+
+                if (size)
+                {
+                    // read up to 128 byte
+                    int c = stream->readBytes(buff, ((size > 128) ? 128 : size));
+                    memcpy(output + total, (void *)buff, c);
+                    // write it to Serial
+                    // USE_SERIAL.write(buff, c);
+
+                    total += c;
+
+                    if (len > 0)
+                    {
+                        len -= c;
+                    }
+                }
+                delay(1);
+            }
+
+            USE_SERIAL.println();
+            USE_SERIAL.print("[HTTP] connection closed or file end.\n");
+        }
+    }
+    else
+    {
+        USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+
+    log_d("total = %d", total);
+
+    WiFiClientSecure client;
+
+    // Generate header
+    String header;
+    header = F("POST /api/values HTTP/1.1\r\n");
+    header += F("Content-Type: application/octet-stream");
+    header += "\r\n";
+    header += F("Accept: */*\r\n");
+    header += F("Host: 192.168.0.105:8080");
+    header += F("\r\n");
+    header += F("accept-encoding: gzip, deflate\r\n");
+    header += F("Connection: keep-alive\r\n");
+    header += F("Content-Length: ");
+    header += String(get_output_length(total));
+    header += "\r\n";
+    header += "\r\n";
+
+    log_d("Header:\n%s", header.c_str());
+
+    if (!client.connect("192.168.0.105", 443, INT32_MAX))
+    {
+        log_e("Connection failed");
+    }
+
+    client.setNoDelay(true);
+
+    client.print(header.c_str());
+
+    for (int i = 0, allocation_size; total > 0; i += allocation_size, total -= allocation_size)
+    {
+        size_t outToSend;
+        allocation_size = total > 9000 ? 9000 : total;
+        log_d("allocation_size = %d", allocation_size);
+
+        uint8_t *temp = (uint8_t *)ps_malloc(allocation_size);
+        memcpy(temp, output + i, allocation_size);
+
+        char *base64_output = base64_encode(temp, allocation_size, &outToSend);
+        log_d("outToSend = %d", outToSend);
+        // log_d("%s", base64_output);
+        client.print(String(base64_output));
+        free(temp);
+        free(base64_output);
+        delay(10);
+    }
+
+    client.flush();
+    client.stop();
+
+    free(output);
     vTaskSuspend(NULL);
 }

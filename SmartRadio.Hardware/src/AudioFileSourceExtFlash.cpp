@@ -10,6 +10,9 @@ AudioFileSourceExtFlash::AudioFileSourceExtFlash(const char *filename)
 bool AudioFileSourceExtFlash::open(const char *filename)
 {
     f = fopen(filename, "rb");
+    fseek(f, 0L, SEEK_END);
+    long sz = ftell(f);
+    log_d("file size: %d", sz);
     return f;
 }
 

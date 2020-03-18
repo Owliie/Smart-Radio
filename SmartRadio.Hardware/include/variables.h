@@ -19,6 +19,7 @@
 #include "AudioFileSourceICYStream.h"
 #include "AudioFileSourceBuffer.h"
 #include "AudioGeneratorMP3.h"
+#include "AudioOutputExtFlash.h"
 #include "AudioOutputI2S.h"
 #include "extflash.h"
 #include "fatflash.h"

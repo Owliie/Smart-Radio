@@ -2,6 +2,7 @@
 #define __AUDIOOUTPUTEXTFLASH_H__
 
 #include "AudioOutput.h"
+#include "variables.h"
 
 class AudioOutputExtFlash : public AudioOutput
 {
@@ -14,6 +15,7 @@ class AudioOutputExtFlash : public AudioOutput
     void SetFilename(const char *name);
 
   private:
+    struct stat st;
     FILE *f;
     char *filename;
 };

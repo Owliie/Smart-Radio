@@ -1,7 +1,4 @@
-#include "definitions.h"
 #include "setup.h"
-#include "stream_callback.h"
-#include "variables.h"
 
 std::string message;
 
@@ -34,7 +31,6 @@ void setup_oled()
 
 void setup_external_fat()
 {
-    // SPIFFS.begin();
     ext_flash_config_t cfg =
         {
             .vspi = true,
@@ -104,13 +100,13 @@ void setup_ntp()
     timeClient->begin();
 }
 
-
-
 void setup_audio_transmission()
 {
     audioLogger = &Serial;
     file = new AudioFileSourceICYStream(STREAM_URL);
     file->RegisterMetadataCB(metadata_callback, (void *)"ICY");
+
+    // AudioFileSourceExtFlash *flash = new AudioFileSourceExtFlash(MOUNT_POINT_FAT "/snippet.mp3");
 
     buff = new AudioFileSourceBuffer(file, 32768);
     buff->RegisterStatusCB(status_callback, (void *)"buffer");
@@ -121,6 +117,7 @@ void setup_audio_transmission()
 
     mp3 = new AudioGeneratorMP3();
     mp3->RegisterStatusCB(status_callback, (void *)"mp3");
+
     mp3->begin(buff, out);
 }
 

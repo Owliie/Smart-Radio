@@ -21,11 +21,18 @@ bool AudioOutputExtFlash::begin()
         return false;
     }
 
+    stat(filename, &st);
+
     return true;
 }
 
 bool AudioOutputExtFlash::ConsumeSample(int16_t sample[2])
 {
+    if (st.st_size > 256000)
+    {
+        return false;
+    }
+   
     log_d("Sample consumed for ExtFlash\n");
 
     for (int i = 0; i < channels; i++)
@@ -43,6 +50,7 @@ bool AudioOutputExtFlash::ConsumeSample(int16_t sample[2])
             fwrite(&h, sizeof(h), 1, f);
         }
     }
+
     return true;
 }
 
