@@ -14,29 +14,36 @@ void drive_oled(void *)
         {
             oled->drawString(0, 10, message.c_str());
         }
+        else
+        {
+            oled->drawString(0, 10, "(no data available)");
+        }
+
+        if (transfer_progress != 0)
+        {
+            oled->drawProgressBar(0, 25, 126, 5, transfer_progress);
+        }
 
         oled->display();
 
-        vTaskDelay(500);
+        vTaskDelay(250);
     }
 }
 
 void record_snippet(void *)
 {
-    remove(MOUNT_POINT_FAT "/snippet.mp3");
+    message = "Recording...";
     HTTPClient http;
 
     USE_SERIAL.print("[HTTP] begin...\n");
 
-    // configure server and url
     http.begin(STREAM_URL);
-    //http.begin("192.168.1.12", 80, "/test.html");
 
     USE_SERIAL.print("[HTTP] GET...\n");
     // start connection and send HTTP header
     int httpCode = http.GET();
     // create buffer for read
-    uint8_t buff[150] = {0};
+    uint8_t buff[256] = {0};
     int total = 0;
     uint8_t *output = (uint8_t *)ps_malloc(256000);
 
@@ -48,7 +55,6 @@ void record_snippet(void *)
         // file found at server
         if (httpCode == HTTP_CODE_OK)
         {
-
             // get lenght of document (is -1 when Server sends no Content-Length header)
             int len = http.getSize();
 
@@ -58,6 +64,7 @@ void record_snippet(void *)
             // read all data from server
             while (http.connected() && (len > 0 || len == -1) && total < 250000)
             {
+                transfer_progress = (total / 250000.0) * 50;
                 // get available data size
                 size_t size = stream->available();
 
@@ -65,8 +72,8 @@ void record_snippet(void *)
 
                 if (size)
                 {
-                    // read up to 150 byte
-                    int c = stream->readBytes(buff, ((size > 150) ? 150 : size));
+                    // read up to 256 byte
+                    int c = stream->readBytes(buff, ((size > 256) ? 256 : size));
                     memcpy(output + total, (void *)buff, c);
                     // write it to Serial
                     // USE_SERIAL.write(buff, c);
@@ -104,8 +111,30 @@ void record_snippet(void *)
     header += F("\r\n");
     header += F("accept-encoding: gzip, deflate\r\n");
     header += F("Connection: keep-alive\r\n");
+    int content_length = 0;
+
+    message = "Encoding and sending...";
+
+    for (int i = 0, temp = total, memory_to_allocate; temp > 0; i += memory_to_allocate, temp -= memory_to_allocate, transfer_progress += 3)
+    {
+        size_t base64_chunk_length;
+        memory_to_allocate = temp > 9000 ? 9000 : temp;
+
+        uint8_t *tempBuff = (uint8_t *)ps_malloc(memory_to_allocate);
+        memcpy(tempBuff, output + i, memory_to_allocate);
+        base64_encode(tempBuff, memory_to_allocate, &base64_chunk_length);
+        content_length += base64_chunk_length;
+        free(tempBuff);
+    }
+
+    header += "Content-Length: ";
+    header += String(content_length);
+    header += "\r\n";
+    header += "\r\n";
 
     log_d("Header:\n%s", header.c_str());
+
+    transfer_progress = 50;
 
     WiFiClientSecure client;
     client.setNoDelay(true);
@@ -115,38 +144,21 @@ void record_snippet(void *)
         log_e("Connection failed");
     }
 
-    int content_length = 0;
-
-    for (int i = 0, temp = total, allocation_size; temp > 0; i += allocation_size, temp -= allocation_size)
-    {
-        size_t outToSend;
-        allocation_size = temp > 9000 ? 9000 : temp;
-
-        uint8_t *tempBuff = (uint8_t *)ps_malloc(allocation_size);
-        memcpy(tempBuff, output + i, allocation_size);
-        base64_encode(tempBuff, allocation_size, &outToSend);
-        content_length += outToSend;
-        free(tempBuff);
-    }
-
-    header += "Content-Length: ";
-    header += String(content_length);
-    header += "\r\n";
-    header += "\r\n";
-
     client.print(header);
 
-    for (int i = 0, allocation_size; total > 0; i += allocation_size, total -= allocation_size)
+    transfer_progress = 75;
+
+    for (int i = 0, memory_to_allocate; total > 0; i += memory_to_allocate, total -= memory_to_allocate)
     {
-        size_t outToSend;
-        allocation_size = total > 9000 ? 9000 : total;
-        log_d("allocation_size = %d", allocation_size);
+        size_t base64_chunk_length;
+        memory_to_allocate = total > 9000 ? 9000 : total;
+        log_v("memory_to_allocate = %d", memory_to_allocate);
 
-        uint8_t *tempBuff = (uint8_t *)ps_malloc(allocation_size);
-        memcpy(tempBuff, output + i, allocation_size);
+        uint8_t *tempBuff = (uint8_t *)ps_malloc(memory_to_allocate);
+        memcpy(tempBuff, output + i, memory_to_allocate);
 
-        char *base64_output = base64_encode(tempBuff, allocation_size, &outToSend);
-        log_d("outToSend = %d", outToSend);
+        char *base64_output = base64_encode(tempBuff, memory_to_allocate, &base64_chunk_length);
+        log_v("base64_chunk_length = %d", base64_chunk_length);
         // log_d("%s", base64_output);
         client.print(base64_output);
         free(tempBuff);
@@ -156,6 +168,12 @@ void record_snippet(void *)
 
     // client.flush();
     client.stop();
+
+    message = "// Response";
+    transfer_progress = 100;
+    delay(2000);
+    
+    transfer_progress = 0;
 
     free(output);
     vTaskSuspend(NULL);

@@ -16,7 +16,6 @@ void setup()
 
     xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
     // delay(3000);
-    xTaskCreatePinnedToCore(record_snippet, "RECORD_IN_MEMORY", MAX_STACK_SIZE, NULL, 1, NULL, 1);
 }
 
 void loop()
@@ -30,8 +29,13 @@ void loop()
     }
     else
     {
-        // log_i("MP3 done. Restarting...\n");
-        // clear_audio_transmission();
-        // setup_audio_transmission();
+        log_i("MP3 done. Restarting...\n");
+        clear_audio_transmission();
+        setup_audio_transmission();
+    }
+
+    if (digitalRead(PIN_PROMPT_RECORD_BUTTON) && (t_record_audio == NULL || eTaskGetState(t_record_audio) == eSuspended))
+    {
+            xTaskCreatePinnedToCore(record_snippet, "RECORD_IN_MEMORY", MAX_STACK_SIZE, NULL, 1, &t_record_audio, 1);
     }
 }

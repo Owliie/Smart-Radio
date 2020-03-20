@@ -1,6 +1,7 @@
 #include "setup.h"
 
 std::string message;
+int transfer_progress = 0;
 
 AudioGeneratorMP3 *mp3;
 AudioFileSourceICYStream *file;
@@ -16,15 +17,23 @@ NTPClient *timeClient;
 
 SSD1306Wire *oled;
 
+TaskHandle_t t_record_audio = NULL;
+
 void setup_gpio()
 {
+    pinMode(PIN_PROMPT_RECORD_BUTTON, INPUT);
 }
 
 void setup_oled()
 {
     oled = new SSD1306Wire(0x3c, 33, 32, GEOMETRY_128_32);
 
-    oled->init();
+    if (!oled->init())
+    {
+        log_e("OLED initialization failed.");
+        for (;;); // Stop setup, force user to reset
+    }
+
     oled->flipScreenVertically();
     oled->setFont(ArialMT_Plain_10);
 }
@@ -52,8 +61,7 @@ void setup_external_fat()
     if (err != ESP_OK)
     {
         log_e("Flash initialization failed. (err: %d)\n", err);
-        for (;;)
-            ;
+        for (;;); // Stop setup, force user to reset
     }
 
     fat_flash_config_t fat_cfg =
@@ -67,9 +75,8 @@ void setup_external_fat()
 
     if (err != ESP_OK)
     {
-        log_e("External FAT initalization failed.");
-        for (;;)
-            ;
+        log_e("FAT mounting failed.");
+        for (;;); // Stop setup, force user to reset
     }
 
     log_d("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", extflash.sector_size(), extflash.chip_size());
