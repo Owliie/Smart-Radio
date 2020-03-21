@@ -13,15 +13,19 @@
 }
 else
 {
-    <ul class="list-group list-group-flush w-100">
+    <ul id="results" class="list-group list-group-flush w-100">
         @foreach (var person in Model)
         {
-        <li class="list-group-item align-content-between w-50" id="search-result-@person.Id">
-            @person.UserName
-            <button class="btn btn-outline-info float-right" onclick="follow('@person.Id')">Follow</button>
-        </li>
+            <li class="list-group-item align-content-between w-50" id="search-result-@person.Id" hidden>
+                @person.UserName
+                <button class="btn btn-outline-info float-right" onclick="follow('@person.Id')">Follow</button>
+            </li>
         }
     </ul>
+    <div id="search-navigation" class="d-inline-flex">
+        <button id="prev-arrow" class="btn" onclick="navigatePrevious()"><</button>
+        <button id="next-arrow" class="btn" onclick="navigateNext()">></button>
+    </div>
 }
 
 @section Scripts

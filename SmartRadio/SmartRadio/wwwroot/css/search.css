@@ -1,3 +1,30 @@
 ﻿ul {
     padding-top: 1%;
 }
+
+#search-navigation {
+    width: 10%;
+    text-align: center;
+    justify-content: space-between;
+    margin-left: 20%;
+    margin-top: 2%;
+}
+
+    #search-navigation button {
+        cursor: pointer;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 50%;
+        border: 1px solid lightgray;
+    }
+
+        #search-navigation button:hover {
+            background-color: #f77754;
+            color: white;
+        }
+
+#search-navigation button:disabled {
+    background-color: lightgray;
+    cursor: not-allowed;
+    color: black;
+}
