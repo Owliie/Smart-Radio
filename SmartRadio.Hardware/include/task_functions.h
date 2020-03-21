@@ -1,7 +1,7 @@
 #ifndef __TASK_FUNCTIONS_H__
 #define __TASK_FUNCTIONS_H__
 
-#include "AudioOutputExtFlash.h"
+#include "base64_encode_psram.h"
 #include "definitions.h"
 #include "setup.h"
 #include "stream_callback.h"

@@ -19,11 +19,14 @@
 #include "AudioFileSourceICYStream.h"
 #include "AudioFileSourceBuffer.h"
 #include "AudioGeneratorMP3.h"
+#include "AudioOutputExtFlash.h"
 #include "AudioOutputI2S.h"
 #include "extflash.h"
 #include "fatflash.h"
 
 extern std::string message;
+
+extern int transfer_progress;
 
 extern AudioGeneratorMP3 *mp3;
 extern AudioFileSourceICYStream *file;
@@ -39,4 +42,5 @@ extern NTPClient *timeClient;
 
 extern SSD1306Wire *oled;
 
+extern TaskHandle_t t_record_audio;
 #endif

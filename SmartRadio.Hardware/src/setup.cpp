@@ -1,9 +1,7 @@
-#include "definitions.h"
 #include "setup.h"
-#include "stream_callback.h"
-#include "variables.h"
 
 std::string message;
+int transfer_progress = 0;
 
 AudioGeneratorMP3 *mp3;
 AudioFileSourceICYStream *file;
@@ -19,22 +17,29 @@ NTPClient *timeClient;
 
 SSD1306Wire *oled;
 
+TaskHandle_t t_record_audio = NULL;
+
 void setup_gpio()
 {
+    pinMode(PIN_PROMPT_RECORD_BUTTON, INPUT);
 }
 
 void setup_oled()
 {
     oled = new SSD1306Wire(0x3c, 33, 32, GEOMETRY_128_32);
 
-    oled->init();
+    if (!oled->init())
+    {
+        log_e("OLED initialization failed.");
+        for (;;); // Stop setup, force user to reset
+    }
+
     oled->flipScreenVertically();
     oled->setFont(ArialMT_Plain_10);
 }
 
 void setup_external_fat()
 {
-    // SPIFFS.begin();
     ext_flash_config_t cfg =
         {
             .vspi = true,
@@ -56,8 +61,7 @@ void setup_external_fat()
     if (err != ESP_OK)
     {
         log_e("Flash initialization failed. (err: %d)\n", err);
-        for (;;)
-            ;
+        for (;;); // Stop setup, force user to reset
     }
 
     fat_flash_config_t fat_cfg =
@@ -71,9 +75,8 @@ void setup_external_fat()
 
     if (err != ESP_OK)
     {
-        log_e("External FAT initalization failed.");
-        for (;;)
-            ;
+        log_e("FAT mounting failed.");
+        for (;;); // Stop setup, force user to reset
     }
 
     log_d("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", extflash.sector_size(), extflash.chip_size());
@@ -104,13 +107,13 @@ void setup_ntp()
     timeClient->begin();
 }
 
-
-
 void setup_audio_transmission()
 {
     audioLogger = &Serial;
     file = new AudioFileSourceICYStream(STREAM_URL);
     file->RegisterMetadataCB(metadata_callback, (void *)"ICY");
+
+    // AudioFileSourceExtFlash *flash = new AudioFileSourceExtFlash(MOUNT_POINT_FAT "/snippet.mp3");
 
     buff = new AudioFileSourceBuffer(file, 32768);
     buff->RegisterStatusCB(status_callback, (void *)"buffer");
@@ -121,6 +124,7 @@ void setup_audio_transmission()
 
     mp3 = new AudioGeneratorMP3();
     mp3->RegisterStatusCB(status_callback, (void *)"mp3");
+
     mp3->begin(buff, out);
 }
 

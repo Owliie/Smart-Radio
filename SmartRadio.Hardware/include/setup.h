@@ -1,6 +1,10 @@
 #ifndef __SETUP_H__
 #define __SETUP_H__
 
+#include "definitions.h"
+#include "stream_callback.h"
+#include "variables.h"
+
 void setup_external_fat();
 void setup_gpio();
 void setup_oled();

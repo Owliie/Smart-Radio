@@ -27,4 +27,6 @@
 #define PIN_SPI_SCK GPIO_NUM_18  // PIN 6 - CLK - CLK
 #define PIN_SPI_SS GPIO_NUM_5    // PIN 1 - /CS - /CS
 
+#define PIN_PROMPT_RECORD_BUTTON GPIO_NUM_34
+
 #endif

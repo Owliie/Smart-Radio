@@ -3,5 +3,4 @@
 #include "setup.h"
 
 void clear_audio_transmission();
-
 #endif
