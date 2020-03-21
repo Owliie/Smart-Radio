@@ -1,6 +1,29 @@
 #include "task_functions.h"
 #define USE_SERIAL Serial
 
+static const uint8_t clock_bits[] = {
+    0xFC,
+    0x00,
+    0x02,
+    0x01,
+    0x21,
+    0x02,
+    0x21,
+    0x02,
+    0x21,
+    0x02,
+    0xE1,
+    0x02,
+    0x01,
+    0x02,
+    0x01,
+    0x02,
+    0x02,
+    0x01,
+    0xFC,
+    0x00,
+};
+
 void drive_oled(void *)
 {
     for (;;)
@@ -8,7 +31,8 @@ void drive_oled(void *)
         oled->clear();
 
         timeClient->update();
-        oled->drawString(0, 0, timeClient->getFormattedTime());
+        oled->drawXbm(0, 2, OLED_ICON_WIDTH, OLED_ICON_HEIGHT, clock_bits);
+        oled->drawString(12, 0, timeClient->getFormattedTime());
 
         if (message != "")
         {
@@ -30,9 +54,20 @@ void drive_oled(void *)
     }
 }
 
+void drive_piezo(void *)
+{
+    for (;;)
+    {
+        tone(PIN_PIEZO, 400);
+        delay(500);
+        noTone(PIN_PIEZO);
+        delay(500);
+    }
+    vTaskSuspend(NULL);
+}
+
 void record_snippet(void *)
 {
-    message = "Recording...";
     HTTPClient http;
 
     USE_SERIAL.print("[HTTP] begin...\n");
@@ -62,9 +97,13 @@ void record_snippet(void *)
             WiFiClient *stream = http.getStreamPtr();
 
             // read all data from server
-            while (http.connected() && (len > 0 || len == -1) && total < 250000)
+            while (http.connected() && (len > 0 || len == -1) && total < SNIPPET_SIZE)
             {
-                transfer_progress = (total / 250000.0) * 50;
+
+                message = "Recording... (";
+                message += itos(total / 1000);
+                message += "k/250k)";
+                transfer_progress = (total / (double)SNIPPET_SIZE) * 50;
                 // get available data size
                 size_t size = stream->available();
 
@@ -172,7 +211,7 @@ void record_snippet(void *)
     message = "// Response";
     transfer_progress = 100;
     delay(2000);
-    
+
     transfer_progress = 0;
 
     free(output);
