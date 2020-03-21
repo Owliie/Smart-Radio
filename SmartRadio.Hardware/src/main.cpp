@@ -16,6 +16,7 @@ void setup()
 
     xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
     // delay(3000);
+    xTaskCreatePinnedToCore(drive_piezo, "PIEZO_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
 }
 
 void loop()

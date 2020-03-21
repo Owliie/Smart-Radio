@@ -28,5 +28,16 @@
 #define PIN_SPI_SS GPIO_NUM_5    // PIN 1 - /CS - /CS
 
 #define PIN_PROMPT_RECORD_BUTTON GPIO_NUM_34
+#define PIN_PIEZO GPIO_NUM_4
+
+#define SNIPPET_SIZE 250000
+
+#define SOUND_PWM_CHANNEL 0
+#define SOUND_RESOLUTION 8
+#define SOUND_ON (1 << (SOUND_RESOLUTION - 1))
+#define SOUND_OFF 0
+
+#define OLED_ICON_WIDTH 10
+#define OLED_ICON_HEIGHT 10
 
 #endif
