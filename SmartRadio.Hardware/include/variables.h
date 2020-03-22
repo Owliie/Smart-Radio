@@ -24,9 +24,19 @@
 #include "extflash.h"
 #include "fatflash.h"
 
+#include "alarms.h"
+
 extern std::string message;
 
 extern int transfer_progress;
+
+extern AlarmManager alarm_manager;
+extern bool is_setting_time;
+extern bool has_set_hours;
+extern bool has_set_minutes;
+
+extern int set_hours;
+extern int set_minutes;
 
 extern AudioGeneratorMP3 *mp3;
 extern AudioFileSourceICYStream *file;
@@ -41,6 +51,4 @@ extern WiFiUDP ntpUDP;
 extern NTPClient *timeClient;
 
 extern SSD1306Wire *oled;
-
-extern TaskHandle_t t_record_audio;
 #endif

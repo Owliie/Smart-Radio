@@ -23,6 +23,138 @@ static const uint8_t clock_bits[] = {
     0xFC,
     0x00,
 };
+static const uint8_t note_bits[] = {
+    0xC0,
+    0x03,
+    0xFC,
+    0x03,
+    0x3C,
+    0x03,
+    0x0C,
+    0x03,
+    0x0C,
+    0x03,
+    0x0C,
+    0x03,
+    0x8C,
+    0x03,
+    0xCE,
+    0x03,
+    0x8F,
+    0x01,
+    0x06,
+    0x00,
+};
+static const uint8_t bell_bits[] = {
+    0x78,
+    0x00,
+    0x84,
+    0x00,
+    0x84,
+    0x00,
+    0x84,
+    0x00,
+    0x84,
+    0x00,
+    0x84,
+    0x00,
+    0x02,
+    0x01,
+    0xFE,
+    0x01,
+    0x48,
+    0x00,
+    0x30,
+    0x00,
+};
+
+static int current_index = 0;
+static TaskHandle_t t_alarm_displayer = NULL;
+static TaskHandle_t t_buzzer_driver = NULL;
+
+void create_new_alarm(void *)
+{
+    while (digitalRead(PIN_CONFIRM_VALUE_BUTTON))
+        ;
+
+    int last_activity = millis();
+
+    bool last_update_button_state = false, last_confirm_button_state = false;
+    bool current_update_button_state = false, current_confirm_button_state = false;
+
+    while (is_setting_time)
+    {
+        if (millis() - last_activity > 10000)
+        {
+            is_setting_time = false;
+        }
+
+        if (has_set_hours && has_set_minutes)
+        {
+            has_set_hours = false;
+            has_set_minutes = false;
+            is_setting_time = false;
+
+            alarm_manager.add_alarm(set_hours, set_minutes);
+        }
+
+        current_update_button_state = digitalRead(PIN_UPDATE_VALUE_BUTTON);
+        if (current_update_button_state != last_update_button_state)
+        {
+            log_d("asd");
+            last_activity = millis();
+            if (current_update_button_state)
+            {
+                log_d("test");
+                if (!has_set_hours)
+                {
+                    log_d("test 2");
+                    set_hours = set_hours >= 23 ? 0 : set_hours + 1;
+                }
+                else if (has_set_hours && !has_set_minutes)
+                {
+                    set_minutes = set_minutes >= 59 ? 0 : set_minutes + 1;
+                }
+            }
+        }
+
+        current_confirm_button_state = digitalRead(PIN_CONFIRM_VALUE_BUTTON);
+        if (current_confirm_button_state != last_confirm_button_state)
+        {
+            last_activity = millis();
+
+            if (current_confirm_button_state)
+            {
+                if (!has_set_hours)
+                {
+                    has_set_hours = true;
+                }
+                else if (has_set_hours && !has_set_minutes)
+                {
+                    has_set_minutes = true;
+                }
+            }
+        }
+
+        last_update_button_state = current_update_button_state;
+        last_confirm_button_state = current_confirm_button_state;
+    }
+    vTaskSuspend(NULL);
+}
+
+static void iterate_alarms(void *)
+{
+    for (;; current_index++)
+    {
+        if (current_index >= alarm_manager.count())
+        {
+            current_index = 0;
+        }
+        vTaskDelay(3000);
+    }
+
+    vTaskSuspend(NULL);
+}
 
 void drive_oled(void *)
 {
@@ -30,39 +162,110 @@ void drive_oled(void *)
     {
         oled->clear();
 
-        timeClient->update();
-        oled->drawXbm(0, 2, OLED_ICON_WIDTH, OLED_ICON_HEIGHT, clock_bits);
-        oled->drawString(12, 0, timeClient->getFormattedTime());
-
-        if (message != "")
+        if (!is_setting_time)
         {
-            oled->drawString(0, 10, message.c_str());
+            timeClient->update();
+            oled->drawXbm(0, 2, OLED_ICON_WIDTH, OLED_ICON_HEIGHT, clock_bits);
+            oled->drawString(12, 0, timeClient->getFormattedTime());
+
+            if (alarm_manager.count() > 0)
+            {
+                oled->drawXbm(90, 2, OLED_ICON_WIDTH, OLED_ICON_HEIGHT, bell_bits);
+
+                std::vector<Alarm> alarms = alarm_manager.get_alarms();
+                if (t_alarm_displayer == NULL || eTaskGetState(t_alarm_displayer) == eSuspended)
+                {
+                    xTaskCreatePinnedToCore(iterate_alarms, "ALARM_DISPLAYER", MAX_STACK_SIZE, NULL, 2, &t_alarm_displayer, 0);
+                }
+
+                oled->drawString(100, 0, String(alarms[current_index].to_string().c_str()));
+            }
+
+            oled->drawXbm(0, 14, OLED_ICON_WIDTH, OLED_ICON_HEIGHT, note_bits);
+            if (message != "")
+            {
+                oled->drawString(12, 12, message.c_str());
+            }
+            else
+            {
+                oled->drawString(12, 12, "(no data available)");
+            }
+
+            if (transfer_progress != 0)
+            {
+                oled->drawProgressBar(0, 25, 126, 5, transfer_progress);
+            }
         }
         else
         {
-            oled->drawString(0, 10, "(no data available)");
-        }
-
-        if (transfer_progress != 0)
-        {
-            oled->drawProgressBar(0, 25, 126, 5, transfer_progress);
+            oled->drawString(0, 0, "[New alarm]");
+            if (!has_set_hours)
+            {
+                oled->drawString(0, 10, "Enter hours: ");
+                oled->drawString(60, 10,
+                                 String(pad_left('0', 2, set_hours).c_str()) + String(":") + String(pad_left('0', 2, set_minutes).c_str()));
+            }
+            else if (!has_set_minutes && has_set_hours)
+            {
+                oled->drawString(0, 10, "Enter minutes: ");
+                oled->drawString(70, 10,
+                                 String(pad_left('0', 2, set_hours).c_str()) + String(":") + String(pad_left('0', 2, set_minutes).c_str()));
+            }
         }
 
         oled->display();
 
-        vTaskDelay(250);
+        vTaskDelay(200);
     }
 }
 
-void drive_piezo(void *)
+static void drive_buzzer(void *)
 {
     for (;;)
     {
-        tone(PIN_PIEZO, 400);
-        delay(500);
-        noTone(PIN_PIEZO);
-        delay(500);
+
+        tone(PIN_PIEZO, 600, 500);
+        tone(PIN_PIEZO, 400, 500);
     }
+}
+
+void drive_alarm_manager(void *)
+{
+    bool alarm_running = false;
+    std::vector<Alarm> alarms = alarm_manager.get_alarms();
+
+    for (;;)
+    {
+        if (alarms.size() != alarm_manager.count())
+        {
+            alarms = alarm_manager.get_alarms();
+        }
+        for (int i = 0; i < alarms.size(); i++)
+        {
+            if (alarms[i].get_hours() == timeClient->getHours() && alarms[i].get_minutes() == timeClient->getMinutes() && timeClient->getSeconds() == 0)
+            {
+                alarm_running = true;
+            }
+        }
+
+        while (alarm_running)
+        {
+            if(t_buzzer_driver == NULL || eTaskGetState(t_buzzer_driver) == eDeleted)
+            {
+                xTaskCreatePinnedToCore(drive_buzzer, "BUZZER_DRIVER", MAX_STACK_SIZE / 10, NULL, 4, &t_buzzer_driver, 0);
+            }
+
+            if (digitalRead(PIN_CONFIRM_VALUE_BUTTON))
+            {
+                vTaskDelete(t_buzzer_driver);
+                noTone(PIN_PIEZO);
+                alarm_running = false;
+            }
+        }
+
+        delay(1000);
+    }
+
     vTaskSuspend(NULL);
 }
 

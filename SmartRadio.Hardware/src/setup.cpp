@@ -3,6 +3,14 @@
 std::string message;
 int transfer_progress = 0;
 
+bool is_setting_time = false;
+
+bool has_set_hours = false;
+bool has_set_minutes = false;
+
+int set_hours = 0;
+int set_minutes = 0;
+
 AudioGeneratorMP3 *mp3;
 AudioFileSourceICYStream *file;
 
@@ -17,11 +25,11 @@ NTPClient *timeClient;
 
 SSD1306Wire *oled;
 
-TaskHandle_t t_record_audio = NULL;
-
 void setup_gpio()
 {
     pinMode(PIN_PROMPT_RECORD_BUTTON, INPUT);
+    pinMode(PIN_UPDATE_VALUE_BUTTON, INPUT);
+    pinMode(PIN_CONFIRM_VALUE_BUTTON, INPUT);
 }
 
 void setup_oled()
@@ -126,6 +134,22 @@ void setup_audio_transmission()
     mp3->RegisterStatusCB(status_callback, (void *)"mp3");
 
     mp3->begin(buff, out);
+}
+
+void load_alarms_from_file()
+{
+    std::ifstream in;
+    in.open(MOUNT_POINT_FAT "/alarms.txt");
+
+    while(in)
+    {
+        int hours, minutes;
+        in >> hours >> minutes;
+
+        alarm_manager.add_alarm(hours, minutes);
+    }
+
+    in.close();
 }
 
 /*

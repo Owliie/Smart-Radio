@@ -1,13 +1,5 @@
 #include "utilities.h"
 
-void clear_audio_transmission()
-{
-    delete mp3;
-    delete file;
-    delete buff;
-    delete out;
-}
-
 void tone(uint8_t pin, unsigned int frequency, unsigned long duration, uint8_t channel)
 {
     if (ledcRead(channel))
@@ -15,7 +7,7 @@ void tone(uint8_t pin, unsigned int frequency, unsigned long duration, uint8_t c
         log_e("Tone channel %d is already in use", ledcRead(channel));
         return;
     }
-    
+
     ledcAttachPin(pin, channel);
     ledcWriteTone(channel, frequency);
     if (duration)
@@ -35,5 +27,12 @@ std::string itos(int i) // convert int to string
 {
     std::stringstream s;
     s << i;
+    return s.str();
+}
+
+std::string pad_left(char pad, int length, int c)
+{
+    std::stringstream s;
+    s << std::setfill(pad) << std::setw(length) << c;
     return s.str();
 }
