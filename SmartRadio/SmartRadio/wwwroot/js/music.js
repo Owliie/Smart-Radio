@@ -17,7 +17,7 @@ $(document).ready(function () {
         return console.error(err.toString());
     });
 
-    connection.on("UpdateMusicList", function (song) {
+    connection.on("UpdateMusicList", function (userSong) {
         var day = getParameterByName("day");
         var now = new Date();
         if (day !== null) {
@@ -29,9 +29,9 @@ $(document).ready(function () {
             }
         }
         $("tbody").prepend(`<tr>
-                                <td>${song.name}</td>
-                                <td>${song.artist}</td>
-                                <td>${song.radioStation}</td>
+                                <td>${userSong.song.name}</td>
+                                <td>${userSong.song.artist}</td>
+                                <td>${userSong.radioStation}</td>
                                 <td>${formatAMPM(now)}</td>
                             </tr>`
         );

@@ -142,20 +142,10 @@ namespace SmartRadio.Data.Migrations
                     b.Property<string>("Artist")
                         .IsRequired();
 
-                    b.Property<DateTime>("Date");
-
-                    b.Property<string>("ListenerId")
-                        .IsRequired();
-
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("RadioStation")
-                        .IsRequired();
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ListenerId");
 
                     b.ToTable("Songs");
                 });
@@ -190,6 +180,24 @@ namespace SmartRadio.Data.Migrations
                     b.HasIndex("Id2");
 
                     b.ToTable("Following");
+                });
+
+            modelBuilder.Entity("SmartRadio.Data.Models.UserSong", b =>
+                {
+                    b.Property<string>("ListenerId");
+
+                    b.Property<int>("SongId");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("RadioStation")
+                        .IsRequired();
+
+                    b.HasKey("ListenerId", "SongId", "Date");
+
+                    b.HasIndex("SongId");
+
+                    b.ToTable("UserSongs");
                 });
 
             modelBuilder.Entity("SmartRadio.Data.User", b =>
@@ -290,14 +298,6 @@ namespace SmartRadio.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SmartRadio.Data.Models.SongData", b =>
-                {
-                    b.HasOne("SmartRadio.Data.User", "Listener")
-                        .WithMany()
-                        .HasForeignKey("ListenerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("SmartRadio.Data.Models.SongFingerprint", b =>
                 {
                     b.HasOne("SmartRadio.Data.Models.SongData", "Song")
@@ -316,6 +316,19 @@ namespace SmartRadio.Data.Migrations
                     b.HasOne("SmartRadio.Data.User", "User2")
                         .WithMany()
                         .HasForeignKey("Id2")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("SmartRadio.Data.Models.UserSong", b =>
+                {
+                    b.HasOne("SmartRadio.Data.User", "Listener")
+                        .WithMany()
+                        .HasForeignKey("ListenerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SmartRadio.Data.Models.SongData", "Song")
+                        .WithMany()
+                        .HasForeignKey("SongId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

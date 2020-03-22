@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SmartRadio.Areas.Api.Models;
 using SmartRadio.Data;
 using SmartRadio.Data.Models;
+using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Infrastructure.Extensions
 {
@@ -20,6 +23,7 @@ namespace SmartRadio.Infrastructure.Extensions
                 serviceScope.ServiceProvider.GetService<SmartRadioDbContext>().Database.Migrate();
 
                 var db = serviceScope.ServiceProvider.GetService<SmartRadioDbContext>();
+                var musicRecognition = serviceScope.ServiceProvider.GetService<ISongRecognitionService>();
 
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>();
@@ -81,18 +85,54 @@ namespace SmartRadio.Infrastructure.Extensions
 
                             await db.SaveChangesAsync();
 
-                            var song = new SongData()
+                            await userManager.AddToRoleAsync(radio, "Radio");
+                            await db.SaveChangesAsync();
+
+                            var songFiles = Directory.EnumerateFiles("./wwwroot/songs");
+
+                            foreach (var songFile in songFiles)
                             {
-                                Name = "Hands up",
-                                Artist = "City wolf",
+                                var fileInfo = new FileInfo(songFile);
+                                var info = fileInfo.Name.Replace(fileInfo.Extension, "").Split('-');
+                                var songData = new SongData()
+                                {
+                                    Name = info[0],
+                                    Artist = info[1]
+                                };
+
+                                var fingerprintsList = new List<SongFingerprint>();
+
+                                var fingerprints = musicRecognition.GetSongData(fileInfo.FullName);
+
+                                short index = 0;
+                                foreach (var fingerprint in fingerprints)
+                                {
+                                    var fingerprintModel = new SongFingerprint()
+                                    {
+                                        Hash = fingerprint,
+                                        Offset = index,
+                                        Song = songData
+                                    };
+
+                                    fingerprintsList.Add(fingerprintModel);
+                                    index++;
+                                }
+
+                                songData.Fingerprints = fingerprintsList;
+
+                                db.Songs.Add(songData);
+                                await db.SaveChangesAsync();
+                            }
+
+                            var userSong = new UserSong()
+                            {
                                 Date = DateTime.Today,
                                 Listener = pesho,
-                                RadioStation = "101.2"
+                                RadioStation = "101.2",
+                                Song = db.Songs.First()
                             };
 
-                            db.Songs.Add(song);
-
-                            await userManager.AddToRoleAsync(radio, "Radio");
+                            db.UserSongs.Add(userSong);
                             await db.SaveChangesAsync();
                         }
                     }).Wait();

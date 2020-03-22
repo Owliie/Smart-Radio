@@ -18,27 +18,37 @@ namespace SmartRadio.Services.Implementations
             this.db = db;
         }
 
-        public IQueryable<SongData> GetSongsByDay(string userId, DateTime date)
+        public IQueryable<UserSong> GetSongsByDay(string userId, DateTime date)
         {
-            return this.db.Songs
-                .Where(s => s.ListenerId == userId && s.Date.Day.Equals(date.Day)).OrderByDescending(s => s.Date);
+//            return this.db.Songs
+//                .Where(s => s.ListenerId == userId && s.Date.Day.Equals(date.Day)).OrderByDescending(s => s.Date);
+            return this.db.UserSongs.Where(s => s.ListenerId == userId && s.Date.Day.Equals(date.Day))
+                .OrderByDescending(s => s.Date);
         }
 
-        public async Task<SongData> AddSongToList(string userId, string name, string artist, string radioStation)
+        public async Task<UserSong> AddSongToList(string userId, string name, string artist, string radioStation)
         {
             var song = new SongData()
             {
                 Artist = artist,
-                Date = DateTime.Now,
-                ListenerId = userId,
                 Name = name,
-                RadioStation = radioStation
             };
 
             await this.db.Songs.AddAsync(song);
             await this.db.SaveChangesAsync();
 
-            return song;
+            var userSong = new UserSong()
+            {
+                Date = DateTime.Now,
+                ListenerId = userId,
+                RadioStation = radioStation,
+                Song = song
+            };
+
+            await this.db.UserSongs.AddAsync(userSong);
+            await this.db.SaveChangesAsync();
+
+            return userSong;
         }
     }
 }

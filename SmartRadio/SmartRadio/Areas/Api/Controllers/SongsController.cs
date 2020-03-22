@@ -73,11 +73,7 @@ namespace SmartRadio.Areas.Api.Controllers
             {
                 // result from song recognition API
                 Console.WriteLine(outerResult);
-                return this.Json(new SongMetadata()
-                {
-                    Name = "Song",
-                    Artist = "Artist"
-                });
+                return this.NotFound();
             }
         }
     }

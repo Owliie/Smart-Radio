@@ -9,5 +9,7 @@ namespace SmartRadio.Services.Interfaces
     public interface ISongRecognitionService
     {
         Task<SongData> GetMetadata(string fileName);
+
+        List<long> GetSongData(string fileName);
     }
 }

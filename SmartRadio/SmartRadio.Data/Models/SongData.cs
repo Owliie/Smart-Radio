@@ -11,21 +11,10 @@ namespace SmartRadio.Data.Models
         public int Id { get; set; }
 
         [Required]
-        public string ListenerId { get; set; }
-
-        [Required]
-        public User Listener { get; set; }
-
-        public DateTime Date { get; set; }
-
-        [Required]
         public string Name { get; set; }
 
         [Required]
         public string Artist { get; set; }
-
-        [Required]
-        public string RadioStation { get; set; }
 
         public ICollection<SongFingerprint> Fingerprints { get; set; } = new HashSet<SongFingerprint>();
     }

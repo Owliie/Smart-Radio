@@ -17,6 +17,7 @@ namespace SmartRadio.Services.Implementations
     {
         private readonly SmartRadioDbContext db;
         private readonly List<int> Frequencies = new List<int> { 40, 80, 120, 180, 300 };
+        private readonly int sampleSize = 512;
 
         public SongRecognitionService(SmartRadioDbContext db)
         {
@@ -25,10 +26,9 @@ namespace SmartRadio.Services.Implementations
 
         public async Task<SongData> GetMetadata(string fileName)
         {
-            var sampleSize = 512;
             var epsilon = 27000000;
 
-            var songFingerprints = this.GetFingerprints(this.Sample(this.GetBytesOfSong(fileName), sampleSize));
+            var songFingerprints = this.GetFingerprints(this.Sample(this.GetBytesOfSong(fileName), this.sampleSize));
 
             foreach (var song in await this.db.Songs.Include(s => s.Fingerprints).ToListAsync())
             {
@@ -40,6 +40,11 @@ namespace SmartRadio.Services.Implementations
             }
 
             return null;
+        }
+
+        public List<long> GetSongData(string fileName)
+        {
+            return this.GetFingerprints(this.Sample(this.GetBytesOfSong(fileName), this.sampleSize));
         }
 
         private byte[] GetBytesOfSong(string songPath)

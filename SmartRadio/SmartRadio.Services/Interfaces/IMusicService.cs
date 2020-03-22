@@ -9,8 +9,8 @@ namespace SmartRadio.Services.Interfaces
 {
     public interface IMusicService
     {
-        IQueryable<SongData> GetSongsByDay(string userId, DateTime date);
+        IQueryable<UserSong> GetSongsByDay(string userId, DateTime date);
 
-        Task<SongData> AddSongToList(string userId, string name, string artist, string radioStation);
+        Task<UserSong> AddSongToList(string userId, string name, string artist, string radioStation);
     }
 }
