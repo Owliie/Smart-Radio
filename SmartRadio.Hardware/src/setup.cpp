@@ -136,6 +136,22 @@ void setup_audio_transmission()
     mp3->begin(buff, out);
 }
 
+void load_alarms_from_file()
+{
+    std::ifstream in;
+    in.open(MOUNT_POINT_FAT "/alarms.txt");
+
+    while(in)
+    {
+        int hours, minutes;
+        in >> hours >> minutes;
+
+        alarm_manager.add_alarm(hours, minutes);
+    }
+
+    in.close();
+}
+
 /*
 void handle_volume()
 {

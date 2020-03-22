@@ -28,6 +28,8 @@ void setup()
     setup_wifi();
     setup_ntp();
     setup_audio_transmission();
+    
+    load_alarms_from_file();
 
     xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
     xTaskCreatePinnedToCore(drive_alarm_manager, "DRIVE_ALARM_MANAGER", MAX_STACK_SIZE / 10, NULL, 3, NULL, 0);

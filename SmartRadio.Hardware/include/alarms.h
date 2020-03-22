@@ -1,6 +1,7 @@
 #ifndef __ALARMS_H__
 #define __ALARMS_H__
 
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>

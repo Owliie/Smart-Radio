@@ -64,10 +64,15 @@ int AlarmManager::count()
 
 void AlarmManager::update_alarms_file()
 {
-    FILE *f = fopen(MOUNT_POINT_FAT "/alarms.txt", "w");
+    std::ofstream out;
 
-    for (int i = 0; i < count(); i++)
+    out.open(MOUNT_POINT_FAT "/alarms.txt");
+
+    for(int i = 0; i < count(); i++)
     {
-        fprintf(f, "%d %d\n", alarms[i].get_hours(), alarms[i].get_minutes());
+        Alarm a = alarms[i];
+        out << a.get_hours() << " " << a.get_minutes() << std::endl;
     }
+
+    out.close();
 }
