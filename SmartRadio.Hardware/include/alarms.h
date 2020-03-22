@@ -29,10 +29,11 @@ public:
     void add_alarm(int, int);
     void delete_alarm_at(int);
     std::vector<Alarm> get_alarms();
+    void sort();
     int count();
 private:
     std::vector<Alarm> alarms;
-    void updateAlarmsFile();
+    void update_alarms_file();
 };
 
 #endif

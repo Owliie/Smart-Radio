@@ -51,6 +51,4 @@ extern WiFiUDP ntpUDP;
 extern NTPClient *timeClient;
 
 extern SSD1306Wire *oled;
-
-extern TaskHandle_t t_record_audio;
 #endif

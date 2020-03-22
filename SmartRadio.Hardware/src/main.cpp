@@ -4,8 +4,10 @@
 #include "utilities.h"
 #include "variables.h"
 
-int last_time_of_button_press = 0;
-bool is_pressed = false;
+static int last_time_of_button_press = 0;
+static bool is_confirm_button_pressed = false;
+
+static TaskHandle_t t_record_audio = NULL;
 
 void clear_audio_transmission()
 {
@@ -28,8 +30,7 @@ void setup()
     setup_audio_transmission();
 
     xTaskCreatePinnedToCore(drive_oled, "CLOCK_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
-    // delay(3000);
-    xTaskCreatePinnedToCore(drive_piezo, "PIEZO_DRIVER", MAX_STACK_SIZE, NULL, 1, NULL, 1);
+    xTaskCreatePinnedToCore(drive_alarm_manager, "DRIVE_ALARM_MANAGER", MAX_STACK_SIZE / 10, NULL, 3, NULL, 0);
 }
 
 void loop()
@@ -50,29 +51,28 @@ void loop()
 
     if (digitalRead(PIN_PROMPT_RECORD_BUTTON) && (t_record_audio == NULL || eTaskGetState(t_record_audio) == eSuspended))
     {
-            xTaskCreatePinnedToCore(record_snippet, "RECORD_IN_MEMORY", MAX_STACK_SIZE, NULL, 1, &t_record_audio, 1);
+        xTaskCreatePinnedToCore(record_snippet, "RECORD_IN_MEMORY", MAX_STACK_SIZE, NULL, 1, &t_record_audio, 1);
     }
 
-    if(digitalRead(PIN_CONFIRM_VALUE_BUTTON))
+    if (digitalRead(PIN_CONFIRM_VALUE_BUTTON))
     {
-        if(!is_pressed)
+        if (!is_confirm_button_pressed)
         {
-            is_pressed = true;
+            is_confirm_button_pressed = true;
             last_time_of_button_press = millis();
         }
 
-        if(millis() - last_time_of_button_press > 3000 && !is_setting_time)
+        if (millis() - last_time_of_button_press > 3000 && !is_setting_time)
         {
             set_hours = timeClient->getHours();
             set_minutes = timeClient->getMinutes();
             is_setting_time = true;
-            xTaskCreatePinnedToCore(create_new_alarm, "CREATE_NEW_ALARM", MAX_STACK_SIZE, NULL, 1, NULL, 0); 
+            xTaskCreatePinnedToCore(create_new_alarm, "CREATE_NEW_ALARM", MAX_STACK_SIZE, NULL, 1, NULL, 0);
             log_d("Is setting time.");
         }
     }
     else
     {
-        is_pressed = false;
+        is_confirm_button_pressed = false;
     }
-    
 }

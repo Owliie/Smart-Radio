@@ -25,8 +25,6 @@ NTPClient *timeClient;
 
 SSD1306Wire *oled;
 
-TaskHandle_t t_record_audio = NULL;
-
 void setup_gpio()
 {
     pinMode(PIN_PROMPT_RECORD_BUTTON, INPUT);

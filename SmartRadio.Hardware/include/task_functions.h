@@ -11,8 +11,8 @@
 #include "utilities.h"
 
 void create_new_alarm(void *);
+void drive_alarm_manager(void *);
 void drive_oled(void *);
-void drive_piezo(void *);
 void record_snippet(void *);
 
 #endif
