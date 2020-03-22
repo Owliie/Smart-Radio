@@ -11,7 +11,6 @@ void metadata_callback(void *cbData, const char *type, bool isUnicode, const cha
     log_i("METADATA(%s) '%s' = '%s'\n", ptr, s1, s2);
     message = std::string(s2);
     log_d("Text length on OLED: %d\n", oled->getStringWidth(s2));
-    Serial.flush();
 }
 
 void status_callback(void *cbData, int code, const char *string)
@@ -21,5 +20,4 @@ void status_callback(void *cbData, int code, const char *string)
     strncpy_P(s1, string, sizeof(s1));
     s1[sizeof(s1) - 1] = 0;
     log_w("STATUS(%s) '%d' = '%s'\n", ptr, code, s1);
-    Serial.flush();
 }

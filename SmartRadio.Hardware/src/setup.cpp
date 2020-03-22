@@ -3,6 +3,14 @@
 std::string message;
 int transfer_progress = 0;
 
+bool is_setting_time = false;
+
+bool has_set_hours = false;
+bool has_set_minutes = false;
+
+int set_hours = 0;
+int set_minutes = 0;
+
 AudioGeneratorMP3 *mp3;
 AudioFileSourceICYStream *file;
 
@@ -22,6 +30,8 @@ TaskHandle_t t_record_audio = NULL;
 void setup_gpio()
 {
     pinMode(PIN_PROMPT_RECORD_BUTTON, INPUT);
+    pinMode(PIN_UPDATE_VALUE_BUTTON, INPUT);
+    pinMode(PIN_CONFIRM_VALUE_BUTTON, INPUT);
 }
 
 void setup_oled()

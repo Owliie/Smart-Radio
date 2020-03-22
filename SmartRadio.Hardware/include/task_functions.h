@@ -3,13 +3,14 @@
 
 #include <string>
 
+#include "alarms.h"
 #include "base64_encode_psram.h"
 #include "definitions.h"
 #include "setup.h"
 #include "stream_callback.h"
 #include "utilities.h"
 
-
+void create_new_alarm(void *);
 void drive_oled(void *);
 void drive_piezo(void *);
 void record_snippet(void *);
