@@ -6,11 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\pictures\ats.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="wwwroot\pictures\owl.jpg" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="wwwroot\pictures\owl.jpg" />
+    <EmbeddedResource Include="wwwroot\pictures\ats.jpg" />
   </ItemGroup>
 
 
