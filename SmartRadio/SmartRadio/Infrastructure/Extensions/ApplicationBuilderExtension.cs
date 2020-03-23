@@ -23,7 +23,7 @@ namespace SmartRadio.Infrastructure.Extensions
                 serviceScope.ServiceProvider.GetService<SmartRadioDbContext>().Database.Migrate();
 
                 var db = serviceScope.ServiceProvider.GetService<SmartRadioDbContext>();
-                var musicRecognition = serviceScope.ServiceProvider.GetService<ISongRecognitionService>();
+                var musicRecognition = serviceScope.ServiceProvider.GetService<IMusicRecognitionService>();
 
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>();

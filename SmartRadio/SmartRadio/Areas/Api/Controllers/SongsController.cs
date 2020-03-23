@@ -12,12 +12,12 @@ namespace SmartRadio.Areas.Api.Controllers
 {
     public class SongsController : ApiBaseController
     {
-        private readonly ISongRecognitionService songRecognitionService;
+        private readonly IMusicRecognitionService musicRecognitionService;
         private readonly IOuterMusicRecognitionService outerMusicRecognitionService;
 
-        public SongsController(ISongRecognitionService songRecognitionService, IOuterMusicRecognitionService outerMusicRecognitionService)
+        public SongsController(IMusicRecognitionService musicRecognitionService, IOuterMusicRecognitionService outerMusicRecognitionService)
         {
-            this.songRecognitionService = songRecognitionService;
+            this.musicRecognitionService = musicRecognitionService;
             this.outerMusicRecognitionService = outerMusicRecognitionService;
         }
 
@@ -31,7 +31,7 @@ namespace SmartRadio.Areas.Api.Controllers
 
             var tempPath = "./temp.mp3";
             var result = new SongData();
-            var outerResult = "";
+            var (outerTitle, outerArtist) = ("", "");
             byte[] songPart = null;
 
             using (var body = new StreamReader(this.Request.Body))
@@ -49,8 +49,8 @@ namespace SmartRadio.Areas.Api.Controllers
 
             try
             {
-                result = await this.songRecognitionService.GetMetadata(tempPath);
-                outerResult = this.outerMusicRecognitionService.GetMetadataFromFile(tempPath);
+                result = await this.musicRecognitionService.GetMetadata(tempPath);
+                (outerTitle, outerArtist) = this.outerMusicRecognitionService.GetMetaData(tempPath);
             }
             catch (Exception e)
             {
@@ -69,12 +69,15 @@ namespace SmartRadio.Areas.Api.Controllers
                     Artist = result.Artist
                 });
             }
-            else
+            if (outerTitle != "" && outerArtist != "")
             {
-                // result from song recognition API
-                Console.WriteLine(outerResult);
-                return this.NotFound();
+                return this.Json(new SongMetadata()
+                {
+                    Name = outerTitle,
+                    Artist = outerArtist
+                });
             }
+            return this.NotFound();
         }
     }
 }

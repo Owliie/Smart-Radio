@@ -6,7 +6,7 @@ using SmartRadio.Data.Models;
 
 namespace SmartRadio.Services.Interfaces
 {
-    public interface ISongRecognitionService
+    public interface IMusicRecognitionService
     {
         Task<SongData> GetMetadata(string fileName);
 

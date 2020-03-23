@@ -67,7 +67,7 @@ namespace SmartRadio
             services.AddTransient<IMusicService, MusicService>();
             services.AddTransient<ISearchService, SearchService>();
             services.AddTransient<IOuterMusicRecognitionService, OuterMusicRecognitionService>();
-            services.AddTransient<ISongRecognitionService, SongRecognitionService>();
+            services.AddTransient<IMusicRecognitionService, MusicRecognitionService>();
 
             services.AddAutoMapper();
             services.AddMvc(config => { config.Filters.Add<UserIdInCookiesFilter>(); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

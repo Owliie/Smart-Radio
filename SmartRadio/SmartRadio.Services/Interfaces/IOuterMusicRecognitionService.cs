@@ -7,6 +7,6 @@ namespace SmartRadio.Services.Interfaces
 {
     public interface IOuterMusicRecognitionService
     {
-        string GetMetadataFromFile(string path);
+        (string title, string artist) GetMetaData(string path);
     }
 }
