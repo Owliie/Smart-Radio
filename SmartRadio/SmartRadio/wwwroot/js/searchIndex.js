@@ -4,8 +4,16 @@ var peoplePerPage = 8;
 var peopleCount = 0;
 
 $(document).ready(function () {
+    if ($("#people-search") !== "") {
+        $("#search-btn").attr("disabled", false);
+    }
+
     $("#appendix").prepend($("<input class='btn btn-important' type='button' onclick='redirectToMusic()' value='X'/>"));
     $("#prev-arrow").prop("disabled", true);
+
+    if (page === maxPages) {
+        $("#next-arrow").prop("disabled", true);
+    }
 
     peopleCount = $("#results").children().length;
 
@@ -22,6 +30,16 @@ $(document).ready(function () {
             $($("#results").children()[i]).attr("hidden", false);
         }
     }
+
+    $("#people-search").on("input", function () {
+        var input = $("#people-search").val();
+
+        if (input === "") {
+            $("#search-btn").attr("disabled", true);
+        } else {
+            $("#search-btn").removeAttr("disabled");
+        }
+    });
 });
 
 function redirectToMusic() {

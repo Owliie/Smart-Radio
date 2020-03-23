@@ -1,5 +1,5 @@
-﻿ul {
-    padding-top: 1%;
+﻿#results {
+    padding-top: 2%;
 }
 
 #search-navigation {
@@ -8,6 +8,7 @@
     justify-content: space-between;
     margin-left: 20%;
     margin-top: 2%;
+    display: inline-flex;
 }
 
     #search-navigation button {
