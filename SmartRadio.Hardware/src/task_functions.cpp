@@ -74,8 +74,7 @@ static TaskHandle_t t_buzzer_driver = NULL;
 
 void create_new_alarm(void *)
 {
-    while (digitalRead(PIN_CONFIRM_VALUE_BUTTON))
-        ;
+    while (digitalRead(PIN_CONFIRM_VALUE_BUTTON));
 
     int last_activity = millis();
 
@@ -95,20 +94,18 @@ void create_new_alarm(void *)
             has_set_minutes = false;
             is_setting_time = false;
 
-            alarm_manager.add_alarm(set_hours, set_minutes);
+            Alarm a(set_hours, set_minutes);
+            alarm_manager.add_alarm(a);
         }
 
         current_update_button_state = digitalRead(PIN_UPDATE_VALUE_BUTTON);
         if (current_update_button_state != last_update_button_state)
         {
-            log_d("asd");
             last_activity = millis();
             if (current_update_button_state)
             {
-                log_d("test");
                 if (!has_set_hours)
                 {
-                    log_d("test 2");
                     set_hours = set_hours >= 23 ? 0 : set_hours + 1;
                 }
                 else if (has_set_hours && !has_set_minutes)

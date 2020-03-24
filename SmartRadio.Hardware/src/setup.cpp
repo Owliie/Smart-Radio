@@ -39,7 +39,8 @@ void setup_oled()
     if (!oled->init())
     {
         log_e("OLED initialization failed.");
-        for (;;); // Stop setup, force user to reset
+        for (;;)
+            ; // Stop setup, force user to reset
     }
 
     oled->flipScreenVertically();
@@ -69,7 +70,8 @@ void setup_external_fat()
     if (err != ESP_OK)
     {
         log_e("Flash initialization failed. (err: %d)\n", err);
-        for (;;); // Stop setup, force user to reset
+        for (;;)
+            ; // Stop setup, force user to reset
     }
 
     fat_flash_config_t fat_cfg =
@@ -84,7 +86,8 @@ void setup_external_fat()
     if (err != ESP_OK)
     {
         log_e("FAT mounting failed.");
-        for (;;); // Stop setup, force user to reset
+        for (;;)
+            ; // Stop setup, force user to reset
     }
 
     log_d("Flash initalization successful:\n - Sector size:%d\n - Capacity: %d\n", extflash.sector_size(), extflash.chip_size());
@@ -141,12 +144,19 @@ void load_alarms_from_file()
     std::ifstream in;
     in.open(MOUNT_POINT_FAT "/alarms.txt");
 
-    while(in)
+    if (!in.fail())
     {
-        int hours, minutes;
-        in >> hours >> minutes;
-
-        alarm_manager.add_alarm(hours, minutes);
+        while (!in.eof())
+        {
+            int hours, minutes;
+            in >> hours >> minutes;
+            Alarm a(hours, minutes);
+            alarm_manager.add_alarm(a);
+        }
+    }
+    else
+    {
+        log_e("Error opening alarms file");
     }
 
     in.close();

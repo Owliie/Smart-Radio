@@ -30,6 +30,13 @@ std::string itos(int i) // convert int to string
     return s.str();
 }
 
+std::string concat_2(char *s1, char *s2)
+{
+    std::stringstream s;
+    s << s1 << s2;
+    return s.str();
+}
+
 std::string pad_left(char pad, int length, int c)
 {
     std::stringstream s;

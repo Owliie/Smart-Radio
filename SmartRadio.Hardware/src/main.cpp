@@ -28,6 +28,7 @@ void setup()
     setup_wifi();
     setup_ntp();
     setup_audio_transmission();
+
     
     load_alarms_from_file();
 
@@ -71,6 +72,12 @@ void loop()
             is_setting_time = true;
             xTaskCreatePinnedToCore(create_new_alarm, "CREATE_NEW_ALARM", MAX_STACK_SIZE, NULL, 1, NULL, 0);
             log_d("Is setting time.");
+        }
+
+        if(millis() - last_time_of_button_press > 10000)
+        {
+            unlink(MOUNT_POINT_FAT "/alarms.txt");
+            log_i("Alarms file deleted.");
         }
     }
     else

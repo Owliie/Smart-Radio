@@ -27,12 +27,13 @@ private:
 class AlarmManager
 {
 public:
-    void add_alarm(int, int);
+    void add_alarm(Alarm);
     void delete_alarm_at(int);
     std::vector<Alarm> get_alarms();
     void sort();
     int count();
 private:
+    bool contains(Alarm);
     std::vector<Alarm> alarms;
     void update_alarms_file();
 };

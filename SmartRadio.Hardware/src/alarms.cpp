@@ -25,11 +25,14 @@ std::string Alarm::to_string()
     return s.str();
 }
 
-void AlarmManager::add_alarm(int hours, int minutes)
+void AlarmManager::add_alarm(Alarm a)
 {
-    alarms.push_back(Alarm(hours, minutes));   
-    sort();
-    update_alarms_file();
+    if (!contains(a))
+    {
+        alarms.push_back(a);
+        sort();
+        update_alarms_file();
+    }
 }
 
 void AlarmManager::delete_alarm_at(int index)
@@ -44,11 +47,24 @@ std::vector<Alarm> AlarmManager::get_alarms()
     return alarms;
 }
 
+bool AlarmManager::contains(Alarm el)
+{
+    for (Alarm a : alarms)
+    {
+        if (a.get_hours() == el.get_hours() && a.get_minutes() == el.get_minutes())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void AlarmManager::sort()
 {
     std::sort(
         alarms.begin(), alarms.end(), [](Alarm a, Alarm b) {
-            if(a.get_hours() == b.get_hours())
+            if (a.get_hours() == b.get_hours())
             {
                 return a.get_minutes() < b.get_minutes();
             }
@@ -68,10 +84,17 @@ void AlarmManager::update_alarms_file()
 
     out.open(MOUNT_POINT_FAT "/alarms.txt");
 
-    for(int i = 0; i < count(); i++)
+    if (!out.fail())
     {
-        Alarm a = alarms[i];
-        out << a.get_hours() << " " << a.get_minutes() << std::endl;
+        for (int i = 0; i < count(); i++)
+        {
+            Alarm a = alarms[i];
+            out << a.get_hours() << " " << a.get_minutes() << std::endl;
+        }
+    }
+    else
+    {
+        log_e("Error opening file (ofstream)");
     }
 
     out.close();
