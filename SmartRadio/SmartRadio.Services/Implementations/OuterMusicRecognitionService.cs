@@ -26,10 +26,13 @@ namespace SmartRadio.Services.Implementations
             string Dateiname = Path.GetFileName(filepath);
 
             // Read file data
-            FileStream fs = new FileStream(filepath, FileMode.Open, FileAccess.Read);
-            byte[] data = new byte[fs.Length];
-            fs.Read(data, 0, data.Length);
-            fs.Close();
+            byte[] data = null;
+            using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+            {
+                data = new byte[fs.Length];
+                fs.Read(data, 0, data.Length);
+            }
+            
 
             // Generate post objects
             var postParameters = new Dictionary<string, object>();

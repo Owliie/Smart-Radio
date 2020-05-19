@@ -104,7 +104,7 @@ namespace SmartRadio.Infrastructure.Extensions
 
                                 var fingerprints = musicRecognition.GetSongData(fileInfo.FullName);
 
-                                short index = 0;
+                                int index = 0;
                                 foreach (var fingerprint in fingerprints)
                                 {
                                     var fingerprintModel = new SongFingerprint()

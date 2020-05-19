@@ -32,7 +32,7 @@ namespace SmartRadio.Services.Implementations
 
             foreach (var song in await this.db.Songs.Include(s => s.Fingerprints).ToListAsync())
             {
-                var fingerprints = song.Fingerprints.Select(f => f.Hash).ToList();
+                var fingerprints = song.Fingerprints.OrderBy(f => f.Offset).Select(f => f.Hash).ToList();
                 if ((this.MatchMaking(fingerprints, songFingerprints, epsilon) * 100 / songFingerprints.Count) >= 45)
                 {
                     return song;
@@ -47,7 +47,7 @@ namespace SmartRadio.Services.Implementations
             return this.GetFingerprints(this.Sample(this.GetBytesOfSong(fileName), this.sampleSize));
         }
 
-        private byte[] GetBytesOfSong(string songPath)
+        private byte[]  GetBytesOfSong(string songPath)
         {
             var songFile = new AudioFileReader(songPath);
 

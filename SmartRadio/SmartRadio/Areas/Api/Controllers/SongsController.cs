@@ -24,33 +24,43 @@ namespace SmartRadio.Areas.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> ResolveMetadata()
         {
-            if (this.Request.Body.Length == 0)
-            {
-                return this.BadRequest();
-            }
-
-            var tempPath = "./temp.mp3";
             var result = new SongData();
             var (outerTitle, outerArtist) = ("", "");
-            byte[] songPart = null;
+            var tempPath = "./temp.mp3";
 
-            using (var body = new StreamReader(this.Request.Body))
+            using (var tempStream = new MemoryStream())
             {
-                body.BaseStream.Seek(0, SeekOrigin.Begin);
-                var songData = await body.ReadToEndAsync();
-                songPart = Convert.FromBase64String(songData);
-            }
+                this.Request.Body.CopyTo(tempStream);
 
-            using (var stream = new FileStream(tempPath, FileMode.Create))
-            {
-                stream.Seek(0, SeekOrigin.End);
-                await stream.WriteAsync(songPart, 0, songPart.Length);
+                if (tempStream.Length == 0)
+                {
+                    return this.BadRequest();
+                }
+
+                tempStream.Seek(0, SeekOrigin.Begin);
+
+                using (var stream = new FileStream(tempPath, FileMode.Create))
+                {
+                    while (true)
+                    {
+                        var buffer = new byte[1024];
+                        var read = tempStream.Read(buffer, 0, buffer.Length);
+                        if (read == 0)
+                        {
+                            break;
+                        }
+                        stream.Write(buffer, 0, read);
+                    }
+                }
             }
 
             try
             {
                 result = await this.musicRecognitionService.GetMetadata(tempPath);
-                (outerTitle, outerArtist) = this.outerMusicRecognitionService.GetMetaData(tempPath);
+                if (result == null)
+                {
+                    (outerTitle, outerArtist) = this.outerMusicRecognitionService.GetMetaData(tempPath);
+                }
             }
             catch (Exception e)
             {

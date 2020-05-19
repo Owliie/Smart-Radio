@@ -17,6 +17,6 @@ namespace SmartRadio.Data.Models
 
         public long Hash { get; set; }
 
-        public short Offset { get; set; }
+        public int Offset { get; set; }
     }
 }
