@@ -73,7 +73,7 @@ namespace SmartRadio.Areas.Api.Controllers
                 result = await this.musicRecognitionService.GetMetadata(tempPath);
                 if (result == null)
                 {
-                    (outerTitle, outerArtist) = this.outerMusicRecognitionService.GetMetaData(tempPath);
+                    (outerArtist, outerTitle) = this.outerMusicRecognitionService.GetMetaData(tempPath);
                 }
             }
             catch (Exception e)
@@ -89,7 +89,7 @@ namespace SmartRadio.Areas.Api.Controllers
 
             if (result != null)
             {
-                var song = this.musicService.AddSongToList(userId, result.Name, result.Artist, radioStation);
+                var song = await this.musicService.AddSongToList(userId, result.Name, result.Artist, radioStation);
                 await this.HubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
 
                 return this.Json(new SongMetadata()
@@ -100,7 +100,7 @@ namespace SmartRadio.Areas.Api.Controllers
             }
             if (outerTitle != "" && outerArtist != "")
             {
-                var song = this.musicService.AddSongToList(userId, outerTitle, outerArtist, radioStation);
+                var song = await this.musicService.AddSongToList(userId, outerTitle, outerArtist, radioStation);
                 await this.HubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
 
                 return this.Json(new SongMetadata()
