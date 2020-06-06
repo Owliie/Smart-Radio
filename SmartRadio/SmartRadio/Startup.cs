@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -62,13 +63,14 @@ namespace SmartRadio
                 .AddSignInManager<SignInManager<User>>()
                 .AddRoleStore<RoleStore<IdentityRole, SmartRadioDbContext>>()
                 .AddUserStore<UserStore<User, IdentityRole, SmartRadioDbContext>>();
-
+            services.AddTransient<ClaimsPrincipal>(
+                s => s.GetService<IHttpContextAccessor>().HttpContext.User);
             services.AddTransient<IFollowerService, FollowerService>();
             services.AddTransient<IMusicService, MusicService>();
             services.AddTransient<ISearchService, SearchService>();
             services.AddTransient<IOuterMusicRecognitionService, OuterMusicRecognitionService>();
             services.AddTransient<IMusicRecognitionService, MusicRecognitionService>();
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper();
             services.AddMvc(config => { config.Filters.Add<UserIdInCookiesFilter>(); }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

@@ -1,24 +1,38 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using SmartRadio.Areas.Api.Models;
+using SmartRadio.Data;
 using SmartRadio.Data.Models;
+using SmartRadio.Hubs;
 using SmartRadio.Services.Interfaces;
 
 namespace SmartRadio.Areas.Api.Controllers
 {
     public class SongsController : ApiBaseController
     {
+        public IHubContext<MusicHub> HubContext { get; set; }
+
         private readonly IMusicRecognitionService musicRecognitionService;
         private readonly IOuterMusicRecognitionService outerMusicRecognitionService;
+        private readonly IMusicService musicService;
+        private readonly UserManager<User> userManager;
 
-        public SongsController(IMusicRecognitionService musicRecognitionService, IOuterMusicRecognitionService outerMusicRecognitionService)
+        public SongsController(IMusicRecognitionService musicRecognitionService, IOuterMusicRecognitionService outerMusicRecognitionService, IHubContext<MusicHub> hubContext, IMusicService musicService, UserManager<User> userManager)
         {
             this.musicRecognitionService = musicRecognitionService;
             this.outerMusicRecognitionService = outerMusicRecognitionService;
+            this.HubContext = hubContext;
+            this.musicService = musicService;
+            this.userManager = userManager;
         }
 
         [HttpPost]
@@ -28,6 +42,12 @@ namespace SmartRadio.Areas.Api.Controllers
             var (outerTitle, outerArtist) = ("", "");
             var tempPath = "./temp.mp3";
             byte[] songPart;
+            var radioStation = "";
+
+            if (this.Request.Headers.TryGetValue("X-Station-Name", out var headerValues))
+            {
+                radioStation = headerValues.FirstOrDefault();
+            }
 
             using (var tempStream = new MemoryStream())
             {
@@ -65,8 +85,13 @@ namespace SmartRadio.Areas.Api.Controllers
                 System.IO.File.Delete(tempPath);
             }
 
+            var userId = this.userManager.GetUserId(this.User);
+
             if (result != null)
             {
+                var song = this.musicService.AddSongToList(userId, result.Name, result.Artist, radioStation);
+                await this.HubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
+
                 return this.Json(new SongMetadata()
                 {
                     Name = result.Name,
@@ -75,6 +100,9 @@ namespace SmartRadio.Areas.Api.Controllers
             }
             if (outerTitle != "" && outerArtist != "")
             {
+                var song = this.musicService.AddSongToList(userId, outerTitle, outerArtist, radioStation);
+                await this.HubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
+
                 return this.Json(new SongMetadata()
                 {
                     Name = outerTitle,
