@@ -27,11 +27,11 @@ namespace SmartRadio.Areas.Api.Controllers
             var result = new SongData();
             var (outerTitle, outerArtist) = ("", "");
             var tempPath = "./temp.mp3";
+            byte[] songPart;
 
             using (var tempStream = new MemoryStream())
             {
                 this.Request.Body.CopyTo(tempStream);
-
                 if (tempStream.Length == 0)
                 {
                     return this.BadRequest();
@@ -39,20 +39,14 @@ namespace SmartRadio.Areas.Api.Controllers
 
                 tempStream.Seek(0, SeekOrigin.Begin);
 
-                using (var stream = new FileStream(tempPath, FileMode.Create))
+                using (var stringStream = new StreamReader(tempStream))
                 {
-                    while (true)
-                    {
-                        var buffer = new byte[1024];
-                        var read = tempStream.Read(buffer, 0, buffer.Length);
-                        if (read == 0)
-                        {
-                            break;
-                        }
-                        stream.Write(buffer, 0, read);
-                    }
+                    var songData = await stringStream.ReadToEndAsync();
+                    songPart = Convert.FromBase64String(songData);
                 }
             }
+
+            await System.IO.File.WriteAllBytesAsync(tempPath, songPart);
 
             try
             {
