@@ -2,6 +2,8 @@
 #define __SETUP_H__
 
 #include <fstream>
+#include <regex>
+#include <string>
 
 #include "definitions.h"
 #include "stream_callback.h"
@@ -13,6 +15,7 @@ void setup_oled();
 void setup_wifi();
 void setup_ntp();
 void setup_audio_transmission();
+void identify_owner();
 
 void load_alarms_from_file();
 

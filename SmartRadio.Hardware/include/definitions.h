@@ -13,6 +13,8 @@
 #define STREAM_URL "http://play.global.audio/veronika128"
 #endif
 
+#define MUSIC_RECOGNITION_BASE_URL "https://192.168.0.111:5000"
+
 #define WIFI_SSID "Gerginov"
 #define WIFI_PASSWORD "59199878"
 
@@ -32,7 +34,7 @@
 #define PIN_CONFIRM_VALUE_BUTTON GPIO_NUM_34
 #define PIN_PIEZO GPIO_NUM_4
 
-#define SNIPPET_SIZE 250000
+#define SNIPPET_SIZE 384000
 
 #define SOUND_PWM_CHANNEL 0
 #define SOUND_RESOLUTION 8

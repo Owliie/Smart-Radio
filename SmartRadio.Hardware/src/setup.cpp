@@ -162,6 +162,64 @@ void load_alarms_from_file()
     in.close();
 }
 
+void identify_owner()
+{
+    HTTPClient http;
+    const char *headerKeys[] = {"Set-Cookie"};
+    http.collectHeaders(headerKeys, 1);
+
+    String token;
+    String antiforgeryCookie;
+
+    if (http.begin(MUSIC_RECOGNITION_BASE_URL "/identity/account/login"))
+    {
+        int responseCode = http.GET();
+        if (responseCode > 0)
+        {
+            String payload = http.getString();
+            std::string payloadCpp = payload.c_str();
+
+            payloadCpp = payloadCpp.substr(5000, 1000);
+            std::regex rgx("value\\=\"");
+
+            std::smatch matches;
+
+            log_d("%s", payloadCpp.c_str());
+            std::sregex_iterator currentMatch(payloadCpp.begin(),
+                                              payloadCpp.end(), rgx);
+
+            std::smatch match = *currentMatch;
+            int position = match.position();
+            token = String(payloadCpp.substr(position + 7, 155).c_str());
+            log_d("%s", token.c_str());
+
+            std::string antiforgeryCookieCpp = http.header("Set-Cookie").c_str();
+            antiforgeryCookie = String(antiforgeryCookieCpp.substr(0, antiforgeryCookieCpp.find(";")).c_str());
+        }
+    }
+
+    http.end();
+
+    HTTPClient http2;
+    const char *headerKeys[] = {"Set-Cookie"};
+    http2.collectHeaders(headerKeys, 1);
+    if (http2.begin(MUSIC_RECOGNITION_BASE_URL "/identity/account/login"))
+    {
+        
+        http2.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        http2.addHeader("Cookie", antiforgeryCookie);
+        String httpRequestData = "Input.Username=pesho&Input.Password=test12&__RequestVerificationToken=" + String(token.c_str());
+        int responseCode = http2.POST(httpRequestData);
+        if (responseCode > 0)
+        {
+            std::string identityCookieCpp = http2.header("Set-Cookie").c_str();
+            identityCookie = String(identityCookieCpp.substr(0, identityCookieCpp.find(";")).c_str());
+        }
+    }
+
+    http2.end();
+}
+
 /*
 void handle_volume()
 {
