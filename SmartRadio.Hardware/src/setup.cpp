@@ -128,7 +128,7 @@ void setup_wifi()
 
 void setup_ntp()
 {
-    timeClient = new NTPClient(ntpUDP, "europe.pool.ntp.org", 7200, 60000);
+    timeClient = new NTPClient(ntpUDP, "europe.pool.ntp.org", 10800, 60000);
     timeClient->begin();
 }
 
