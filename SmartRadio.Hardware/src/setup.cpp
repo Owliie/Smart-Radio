@@ -1,5 +1,8 @@
 #include "setup.h"
 
+String identityCookie;
+String ipAddress;
+
 std::string message;
 int transfer_progress = 0;
 
@@ -100,6 +103,7 @@ void setup_wifi()
     WiFi.disconnect();
     WiFi.softAPdisconnect(true);
     WiFi.mode(WIFI_STA);
+    WiFi.setSleep(false);
 
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
@@ -109,7 +113,17 @@ void setup_wifi()
         log_d("...Connecting to WiFi");
         delay(1000);
     }
-    log_d("Connected\n", WiFi.localIP().toString().c_str());
+
+    ipAddress = WiFi.localIP().toString();
+
+    log_d("IP address: ");
+    log_d("%s", ipAddress.c_str());
+    log_d("Subnet Mask: ");
+    log_d("%s", WiFi.subnetMask().toString().c_str());
+    log_d("Gateway IP: ");
+    log_d("%s", WiFi.gatewayIP().toString().c_str());
+    log_d("DNS: ");
+    log_d("%s", WiFi.dnsIP().toString().c_str());
 }
 
 void setup_ntp()
@@ -174,7 +188,7 @@ void identify_owner()
     if (http.begin(MUSIC_RECOGNITION_BASE_URL "/identity/account/login"))
     {
         int responseCode = http.GET();
-        if (responseCode > 0)
+        if (responseCode > 0 && responseCode == 200)
         {
             String payload = http.getString();
             std::string payloadCpp = payload.c_str();
@@ -201,16 +215,15 @@ void identify_owner()
     http.end();
 
     HTTPClient http2;
-    const char *headerKeys[] = {"Set-Cookie"};
     http2.collectHeaders(headerKeys, 1);
     if (http2.begin(MUSIC_RECOGNITION_BASE_URL "/identity/account/login"))
     {
-        
+
         http2.addHeader("Content-Type", "application/x-www-form-urlencoded");
         http2.addHeader("Cookie", antiforgeryCookie);
-        String httpRequestData = "Input.Username=pesho&Input.Password=test12&__RequestVerificationToken=" + String(token.c_str());
+        String httpRequestData = "Input.Username=misho&Input.Password=test12&__RequestVerificationToken=" + String(token.c_str());
         int responseCode = http2.POST(httpRequestData);
-        if (responseCode > 0)
+        if (responseCode > 0 && responseCode == 302)
         {
             std::string identityCookieCpp = http2.header("Set-Cookie").c_str();
             identityCookie = String(identityCookieCpp.substr(0, identityCookieCpp.find(";")).c_str());

@@ -211,6 +211,11 @@ void drive_oled(void *)
             }
         }
 
+        if(oled->getStringWidth(message.c_str()) > 116) {
+            message = message.substr(1, message.length() - 1) + message.front();
+
+        }
+
         oled->display();
 
         vTaskDelay(200);
@@ -270,7 +275,7 @@ void drive_alarm_manager(void *)
 void record_snippet(void *)
 {
     HTTPClient http;
-    String station_name;
+    String stationName;
 
     USE_SERIAL.print("[HTTP] begin...\n");
 
@@ -288,8 +293,8 @@ void record_snippet(void *)
 
     if (httpCode > 0)
     {
-        station_name = http.header("icy-name");
-        log_d("station name: %s", station_name.c_str());
+        stationName = http.header("icy-name");
+        log_d("station name: %s", stationName.c_str());
         // HTTP header has been send and Server response header has been handled
         USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
 
@@ -308,7 +313,7 @@ void record_snippet(void *)
 
                 message = "Recording... (";
                 message += itos(total / 1000);
-                message += "k/384k)";
+                message += "k/250k)";
                 transfer_progress = (total / (double)SNIPPET_SIZE) * 50;
                 // get available data size
                 size_t size = stream->available();
@@ -348,12 +353,20 @@ void record_snippet(void *)
 
     // Generate header
     String header;
-    header = F("POST /api/values HTTP/1.1\r\n");
+    header = F("POST /api/songs/resolvemetadata HTTP/1.1\r\n");
     header += F("Content-Type: application/octet-stream");
     header += "\r\n";
     header += F("Accept: */*\r\n");
-    header += F("Host: 192.168.0.105:8080");
-    header += F("\r\n");
+    header += F("Host: ");
+    header += ipAddress;
+    header += "\r\n";
+    if (identityCookie != "")
+    {
+        log_d("%s", identityCookie.c_str());
+        header += F("Cookie: ");
+        header += identityCookie;
+        header += "\r\n";
+    }
     header += F("accept-encoding: gzip, deflate\r\n");
     header += F("Connection: keep-alive\r\n");
     int content_length = 0;
@@ -366,7 +379,6 @@ void record_snippet(void *)
         memory_to_allocate = temp > 9000 ? 9000 : temp;
 
         uint8_t *tempBuff = (uint8_t *)ps_malloc(memory_to_allocate);
-        log_d("kurec");
         memcpy(tempBuff, output + i, memory_to_allocate);
         base64_encode(tempBuff, memory_to_allocate, &base64_chunk_length);
         content_length += base64_chunk_length;
@@ -375,6 +387,9 @@ void record_snippet(void *)
 
     header += "Content-Length: ";
     header += String(content_length);
+    header += "\r\n";
+    header += F("X-Station-Name: ");
+    header += stationName;
     header += "\r\n";
     header += "\r\n";
 
@@ -385,7 +400,7 @@ void record_snippet(void *)
     WiFiClientSecure client;
     client.setNoDelay(true);
 
-    if (!client.connect("192.168.0.105", 443, INT32_MAX))
+    if (!client.connect(MUSIC_RECOGNITION_BASE_URL_NO_PORT, 5000, INT32_MAX))
     {
         log_e("Connection failed");
     }
@@ -409,13 +424,32 @@ void record_snippet(void *)
         client.print(base64_output);
         free(tempBuff);
         free(base64_output);
-        delay(10);
+        delay(0);
     }
 
+    message = "Waiting for response...";
+    transfer_progress = 90;
+
+    while(!client.available());
+
+    for(int i = 0; client.available(); i++) {
+        String line = client.readStringUntil('\r');
+        std::string lineCpp = line.c_str();
+        log_d("%s", line.c_str());
+        if(i == 0) {
+            if(lineCpp.compare("HTTP/1.1 200 OK") != 0) {
+                message = "(no data available)";
+                break;
+            }
+        }
+
+        if(lineCpp.find("$$-") != std::string::npos) {
+            message = lineCpp.substr(4);
+        }
+    }
     // client.flush();
     client.stop();
 
-    message = "// Response";
     transfer_progress = 100;
     delay(2000);
 

@@ -1,7 +1,7 @@
 #ifndef __DEFINITIONS_H__
 #define __DEFINITIONS_H__
 
-#define URL_SELECTION 2
+#define URL_SELECTION 1
 
 #if URL_SELECTION == 0
 #define STREAM_URL "http://46.10.150.243/z-rock.mp3"
@@ -10,10 +10,13 @@
 #elif URL_SELECTION == 2
 #define STREAM_URL "http://play.global.audio:80/nrj128"
 #elif URL_SELECTION == 3
-#define STREAM_URL "http://play.global.audio/veronika128"
+#define STREAM_URL "http://193.108.24.21:8000/fresh"
+#elif URL_SELECTION == 4
+#define STREAM_URL "http://46.10.150.243:80/njoy.mp3"
 #endif
 
-#define MUSIC_RECOGNITION_BASE_URL "https://192.168.0.111:5000"
+#define MUSIC_RECOGNITION_BASE_URL "https://192.168.0.101:5000"
+#define MUSIC_RECOGNITION_BASE_URL_NO_PORT "192.168.0.101"
 
 #define WIFI_SSID "Gerginov"
 #define WIFI_PASSWORD "59199878"
@@ -34,7 +37,7 @@
 #define PIN_CONFIRM_VALUE_BUTTON GPIO_NUM_34
 #define PIN_PIEZO GPIO_NUM_4
 
-#define SNIPPET_SIZE 384000
+#define SNIPPET_SIZE 250000
 
 #define SOUND_PWM_CHANNEL 0
 #define SOUND_RESOLUTION 8
