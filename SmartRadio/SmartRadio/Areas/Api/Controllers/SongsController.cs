@@ -19,20 +19,24 @@ namespace SmartRadio.Areas.Api.Controllers
 {
     public class SongsController : ApiBaseController
     {
-        public IHubContext<MusicHub> HubContext { get; set; }
+        public IHubContext<MusicHub> MusicHubContext { get; set; }
+        public IHubContext<FollowingActivityHub> FollowingActivityHubContext { get; set; }
 
         private readonly IMusicRecognitionService musicRecognitionService;
         private readonly IOuterMusicRecognitionService outerMusicRecognitionService;
         private readonly IMusicService musicService;
+        private readonly IFollowerService followerService;
         private readonly UserManager<User> userManager;
 
-        public SongsController(IMusicRecognitionService musicRecognitionService, IOuterMusicRecognitionService outerMusicRecognitionService, IHubContext<MusicHub> hubContext, IMusicService musicService, UserManager<User> userManager)
+        public SongsController(IMusicRecognitionService musicRecognitionService, IOuterMusicRecognitionService outerMusicRecognitionService, IHubContext<MusicHub> musicHubContext, IMusicService musicService, UserManager<User> userManager, IHubContext<FollowingActivityHub> followingActivityHubContext, IFollowerService followerService)
         {
             this.musicRecognitionService = musicRecognitionService;
             this.outerMusicRecognitionService = outerMusicRecognitionService;
-            this.HubContext = hubContext;
+            this.MusicHubContext = musicHubContext;
             this.musicService = musicService;
             this.userManager = userManager;
+            this.FollowingActivityHubContext = followingActivityHubContext;
+            this.followerService = followerService;
         }
 
         [HttpPost]
@@ -49,27 +53,26 @@ namespace SmartRadio.Areas.Api.Controllers
                 radioStation = headerValues.FirstOrDefault();
             }
 
-            using (var tempStream = new MemoryStream())
-            {
-                this.Request.Body.CopyTo(tempStream);
-                if (tempStream.Length == 0)
-                {
-                    return this.BadRequest();
-                }
-
-                tempStream.Seek(0, SeekOrigin.Begin);
-
-                using (var stringStream = new StreamReader(tempStream))
-                {
-                    var songData = await stringStream.ReadToEndAsync();
-                    songPart = Convert.FromBase64String(songData);
-                }
-            }
-
-            await System.IO.File.WriteAllBytesAsync(tempPath, songPart);
-
             try
             {
+                using (var tempStream = new MemoryStream())
+                {
+                    this.Request.Body.CopyTo(tempStream);
+                    if (tempStream.Length == 0)
+                    {
+                        return this.BadRequest();
+                    }
+
+                    tempStream.Seek(0, SeekOrigin.Begin);
+
+                    using (var stringStream = new StreamReader(tempStream))
+                    {
+                        var songData = await stringStream.ReadToEndAsync();
+                        songPart = Convert.FromBase64String(songData);
+                    }
+                }
+
+                await System.IO.File.WriteAllBytesAsync(tempPath, songPart);
                 result = await this.musicRecognitionService.GetMetadata(tempPath);
                 if (result == null)
                 {
@@ -86,11 +89,14 @@ namespace SmartRadio.Areas.Api.Controllers
             }
 
             var userId = this.userManager.GetUserId(this.User);
+            await this.followerService.UpdateRadioStation(userId, radioStation);
+            var usersFollowingCurrentUser = await this.followerService.getUserFollowers(userId);
+            await this.FollowingActivityHubContext.Clients.Users(usersFollowingCurrentUser).SendAsync("UpdateRadioStation", userId, radioStation);
 
             if (result != null)
             {
                 var song = await this.musicService.AddSongToList(userId, result.Name, result.Artist, radioStation);
-                await this.HubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
+                await this.MusicHubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
 
                 return this.Json(new SongMetadata()
                 {
@@ -101,7 +107,7 @@ namespace SmartRadio.Areas.Api.Controllers
             if (outerTitle != "" && outerArtist != "")
             {
                 var song = await this.musicService.AddSongToList(userId, outerTitle, outerArtist, radioStation);
-                await this.HubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
+                await this.MusicHubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
 
                 return this.Json(new SongMetadata()
                 {

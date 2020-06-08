@@ -25,7 +25,7 @@ namespace SmartRadio.Areas.Identity.Pages.Account
             this._signInManager = signInManager;
             this._logger = logger;
         }
-
+        
         [BindProperty]
         public InputModel Input { get; set; }
 
@@ -56,11 +56,12 @@ namespace SmartRadio.Areas.Identity.Pages.Account
             {
                 this.ModelState.AddModelError(string.Empty, this.ErrorMessage);
             }
-
+            
             returnUrl = returnUrl ?? this.Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
             await this.HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
 
             this.ExternalLogins = (await this._signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 

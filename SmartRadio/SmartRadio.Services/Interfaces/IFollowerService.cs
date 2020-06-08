@@ -14,5 +14,6 @@ namespace SmartRadio.Services.Interfaces
         Task<User> Follow(string userId, string friendId);
         Task UnFollow(string userId, string friendId);
         Task UpdateRadioStation(string userId, string radioStation);
+        Task<List<string>> getUserFollowers(string userId);
     }
 }

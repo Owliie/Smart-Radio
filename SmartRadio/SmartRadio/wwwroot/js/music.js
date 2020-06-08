@@ -76,11 +76,4 @@ jQuery('.dropdown-menu.keep-open').on('click', function (e) {
     e.stopPropagation();
 });
 
-if (true) {
-    $('body').attr('tabindex', '0');
-}
-else {
-    alertify.confirm().set({ 'reverseButtons': true });
-    alertify.prompt().set({ 'reverseButtons': true });
-}
-
+$('body').attr('tabindex', '0');

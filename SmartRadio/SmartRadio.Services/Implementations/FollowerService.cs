@@ -61,5 +61,11 @@ namespace SmartRadio.Services.Implementations
 
             await this.db.SaveChangesAsync();
         }
+
+        public async Task<List<string>> getUserFollowers(string userId)
+        {
+            return await this.db.Users
+                .SelectMany(u => u.Following.Where(f => f.Id2 == userId).Select(f => f.Id1)).ToListAsync();
+        }
     }
 }

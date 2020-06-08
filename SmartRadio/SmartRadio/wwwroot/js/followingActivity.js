@@ -14,7 +14,11 @@ $(document).ready(function () {
                 $("#following").append(followingInfo(following));
             }
         }
-        
+    });
+
+    connection.on("UpdateRadioStation", function (followingId, radioStation) {
+        console.log(followingId);
+        $(`#fm-${followingId}`).text(radioStation);
     });
 
     connection.on("UnFollow", function (id) {
@@ -25,8 +29,6 @@ $(document).ready(function () {
         $("#following").append(followingInfo(following));
         $(`#search-result-${following.id}`).remove();
     });
-
-
 
     connection.start().then(function () {
         connection.invoke("JoinRoom", userId).catch(function (err) {
@@ -40,7 +42,7 @@ $(document).ready(function () {
         return $(`<li class="list-group-item d-flex justify-content-between align-items-center" id="following-item-${following.id}">
                 <h5 class="mb-1">${following.userName}</h5>
                 <div>
-                    <span id="fm" class="badge badge-secondary">${following.radioStation}</span>
+                    <span id="fm-${following.id}" class="badge badge-secondary">${following.radioStation}</span>
                     <div class="btn-group dropright d-inline">
                         <span class="more" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             &#xFE19;
