@@ -74,7 +74,8 @@ static TaskHandle_t t_buzzer_driver = NULL;
 
 void create_new_alarm(void *)
 {
-    while (digitalRead(PIN_CONFIRM_VALUE_BUTTON));
+    while (digitalRead(PIN_CONFIRM_VALUE_BUTTON))
+        ;
 
     int last_activity = millis();
 
@@ -247,7 +248,7 @@ void drive_alarm_manager(void *)
 
         while (alarm_running)
         {
-            if(t_buzzer_driver == NULL || eTaskGetState(t_buzzer_driver) == eDeleted)
+            if (t_buzzer_driver == NULL || eTaskGetState(t_buzzer_driver) == eDeleted)
             {
                 xTaskCreatePinnedToCore(drive_buzzer, "BUZZER_DRIVER", MAX_STACK_SIZE / 10, NULL, 4, &t_buzzer_driver, 0);
             }
@@ -269,10 +270,13 @@ void drive_alarm_manager(void *)
 void record_snippet(void *)
 {
     HTTPClient http;
+    String station_name;
 
     USE_SERIAL.print("[HTTP] begin...\n");
 
     http.begin(STREAM_URL);
+    const char *headerKeys[] = {"icy-name"};
+    http.collectHeaders(headerKeys, 1);
 
     USE_SERIAL.print("[HTTP] GET...\n");
     // start connection and send HTTP header
@@ -280,10 +284,12 @@ void record_snippet(void *)
     // create buffer for read
     uint8_t buff[256] = {0};
     int total = 0;
-    uint8_t *output = (uint8_t *)ps_malloc(256000);
+    uint8_t *output = (uint8_t *)ps_malloc(SNIPPET_SIZE + 1000);
 
     if (httpCode > 0)
     {
+        station_name = http.header("icy-name");
+        log_d("station name: %s", station_name.c_str());
         // HTTP header has been send and Server response header has been handled
         USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
 
@@ -302,7 +308,7 @@ void record_snippet(void *)
 
                 message = "Recording... (";
                 message += itos(total / 1000);
-                message += "k/250k)";
+                message += "k/384k)";
                 transfer_progress = (total / (double)SNIPPET_SIZE) * 50;
                 // get available data size
                 size_t size = stream->available();
@@ -360,6 +366,7 @@ void record_snippet(void *)
         memory_to_allocate = temp > 9000 ? 9000 : temp;
 
         uint8_t *tempBuff = (uint8_t *)ps_malloc(memory_to_allocate);
+        log_d("kurec");
         memcpy(tempBuff, output + i, memory_to_allocate);
         base64_encode(tempBuff, memory_to_allocate, &base64_chunk_length);
         content_length += base64_chunk_length;

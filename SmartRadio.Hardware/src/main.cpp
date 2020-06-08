@@ -28,6 +28,7 @@ void setup()
     setup_wifi();
     setup_ntp();
     setup_audio_transmission();
+    identify_owner();
 
     
     load_alarms_from_file();
