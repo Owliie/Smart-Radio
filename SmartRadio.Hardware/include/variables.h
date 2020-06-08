@@ -27,7 +27,7 @@
 #include "alarms.h"
 
 extern String identityCookie;
-
+extern String ipAddress;
 extern std::string message;
 
 extern int transfer_progress;
