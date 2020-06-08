@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -81,6 +82,7 @@ namespace SmartRadio.Areas.Api.Controllers
             }
             catch (Exception e)
             {
+                System.IO.File.Delete(tempPath);
                 return this.BadRequest();
             }
             finally
@@ -98,22 +100,16 @@ namespace SmartRadio.Areas.Api.Controllers
                 var song = await this.musicService.AddSongToList(userId, result.Name, result.Artist, radioStation);
                 await this.MusicHubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
 
-                return this.Json(new SongMetadata()
-                {
-                    Name = result.Name,
-                    Artist = result.Artist
-                });
+                var songMetadata = String.Join('-', new List<string>() {"$$", result.Name, result.Artist});
+                return this.Content(songMetadata);
             }
             if (outerTitle != "" && outerArtist != "")
             {
                 var song = await this.musicService.AddSongToList(userId, outerTitle, outerArtist, radioStation);
                 await this.MusicHubContext.Clients.Group(userId).SendAsync("UpdateMusicList", song);
 
-                return this.Json(new SongMetadata()
-                {
-                    Name = outerTitle,
-                    Artist = outerArtist
-                });
+                var songMetadata = String.Join('-', new List<string>() {"$$", outerTitle, outerArtist});
+                return this.Content(songMetadata);
             }
             return this.NotFound();
         }
