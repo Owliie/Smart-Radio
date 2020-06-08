@@ -438,13 +438,13 @@ void record_snippet(void *)
         log_d("%s", line.c_str());
         if(i == 0) {
             if(lineCpp.compare("HTTP/1.1 200 OK") != 0) {
-                message = "(no data available)";
+                message = "";
                 break;
             }
         }
 
         if(lineCpp.find("$$-") != std::string::npos) {
-            message = lineCpp.substr(4);
+            message = lineCpp.substr(4).append("    ");
         }
     }
     // client.flush();

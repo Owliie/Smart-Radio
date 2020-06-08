@@ -1,7 +1,7 @@
 #ifndef __DEFINITIONS_H__
 #define __DEFINITIONS_H__
 
-#define URL_SELECTION 1
+#define URL_SELECTION 0
 
 #if URL_SELECTION == 0
 #define STREAM_URL "http://46.10.150.243/z-rock.mp3"
